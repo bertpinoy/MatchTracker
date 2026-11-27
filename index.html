@@ -60,7 +60,7 @@
   .hint{font-size:12.5px;color:var(--muted);margin-top:8px}
 
   /* roster numbers (setup) */
-  .nums{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .nums{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
   .num{aspect-ratio:1/1;border-radius:14px;background:var(--bg);border:1px solid var(--line);display:flex;flex-direction:column;
        align-items:center;justify-content:center;padding:2px;min-width:0}
   .num b{font-size:22px;line-height:1;color:var(--muted)}
@@ -215,8 +215,10 @@
 
     <div class="card">
       <h2>Onze spelers</h2>
+      <label class="f">Aantal spelers</label>
+      <div class="stepper" style="margin-bottom:14px"><button data-step="squadSize:-1">−</button><div class="val" id="s-squadSize">12</div><button data-step="squadSize:1">+</button></div>
       <div class="nums" id="s-nums"></div>
-      <div class="hint">Tik op een rugnummer om een naam toe te voegen. De spelers worden onthouden voor de volgende wedstrijd.</div>
+      <div class="hint">Tik op een rugnummer om een naam toe te voegen. Heeft een speler een hoger nummer? Gebruik ＋ nummer. De spelers worden onthouden voor de volgende wedstrijd.</div>
     </div>
 
     <button class="btn primary big block" id="s-go">Naar de wedstrijd ▶</button>
@@ -344,17 +346,18 @@ const SYS = {period_start:'▶', period_end:'⏸'};
 function loadPrefs(){ try { return JSON.parse(localStorage.getItem(PREF)) || {}; } catch { return {}; } }
 function defaultSetup(){
   const p = loadPrefs();
-  return Object.assign({team:'KWSC Lauwe', opponent:'', weAreHome:true, periods:4, periodMin:15, countDown:true, players:{}}, p, {opponent:''});
+  return Object.assign({team:'KWSC Lauwe', opponent:'', weAreHome:true, periods:4, periodMin:15, countDown:true, squadSize:12, players:{}}, p, {opponent:''});
 }
 function newMatch(){ return {setup:defaultSetup(), status:'setup', view:'setup', date:today(), period:1, acc:0, runStart:null, events:[], alarmed:{}, sel:'us'}; }
 let st;
 try { st = JSON.parse(localStorage.getItem(KEY)); } catch { st = null; }
 if (!st || !st.setup) st = newMatch();
+if (!st.setup.squadSize) st.setup.squadSize = 12;   // bestaande wedstrijden van vóór deze versie
 
 function save(){
   localStorage.setItem(KEY, JSON.stringify(st));
   const s = S();
-  localStorage.setItem(PREF, JSON.stringify({team:s.team, weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, countDown:s.countDown, players:s.players}));
+  localStorage.setItem(PREF, JSON.stringify({team:s.team, weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, countDown:s.countDown, squadSize:s.squadSize, players:s.players}));
 }
 
 /* ---------- helpers ---------- */
@@ -437,7 +440,8 @@ function renderSetup(){
   $('#s-presets').innerHTML = PRESETS.map(([p, m]) =>
     `<button class="chip ${p === s.periods && m === s.periodMin ? 'on' : ''}" data-preset="${p},${m}">${p} × ${m}′</button>`).join('');
   $$('#s-count button').forEach(b => b.classList.toggle('on', (b.dataset.count === 'down') === s.countDown));
-  const nums = new Set(Array.from({length:25}, (_, i) => i + 1));
+  $('#s-squadSize').textContent = s.squadSize;
+  const nums = new Set(Array.from({length:s.squadSize}, (_, i) => i + 1));
   Object.keys(s.players || {}).forEach(n => nums.add(Number(n)));
   $('#s-nums').innerHTML = [...nums].sort((a, b) => a - b).map(n => {
     const name = (s.players[n] || '').trim();
@@ -452,7 +456,7 @@ $('#s-presets').addEventListener('click', e => {
   const [p, m] = b.dataset.preset.split(',').map(Number); S().periods = p; S().periodMin = m; save(); renderSetup();
 });
 $$('[data-step]').forEach(b => b.addEventListener('click', () => {
-  const [k, d] = b.dataset.step.split(':'); const lim = k === 'periods' ? [1, 8] : [1, 90];
+  const [k, d] = b.dataset.step.split(':'); const lim = {periods:[1, 8], periodMin:[1, 90], squadSize:[5, 30]}[k];
   S()[k] = Math.min(lim[1], Math.max(lim[0], S()[k] + Number(d))); save(); renderSetup();
 }));
 $$('#s-count button').forEach(b => b.addEventListener('click', () => { S().countDown = b.dataset.count === 'down'; save(); renderSetup(); }));
@@ -644,7 +648,7 @@ function openPicker(type, side, when, fields){
     } else {
       const taken = Object.values(data);
       let list = roster();
-      if (!list.length) list = Array.from({length:25}, (_, i) => ({num:i + 1, name:''}));
+      if (!list.length) list = Array.from({length:S().squadSize}, (_, i) => ({num:i + 1, name:''}));
       list = list.filter(p => !taken.includes(plabel(p.num, p.name)));
       openSheet(`${head()}
         <div class="q">${q}${optional ? ' <span class="muted small">(optioneel)</span>' : ''}</div>
