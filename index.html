@@ -412,7 +412,12 @@ const sideColor = s => s === 'us' ? US_COLOR : THEM_COLOR;
 const homeSide = () => S().weAreHome ? 'us' : 'them';
 const order = () => [homeSide(), other(homeSide())];
 const lenMs = () => S().periodMin * 60000;
-const elapsed = () => st.acc + (st.runStart ? Date.now() - st.runStart : 0);
+/* Ouders: de klok volgt een anker dat bij elke update van de coach-telefoon gezet wordt,
+   zodat een verschil tussen de klokken van beide telefoons geen rol speelt. */
+let watchAnchor = null;   // {el, at}: gespeelde ms volgens de coach op lokaal tijdstip 'at'
+const elapsed = () => (VIEWER && watchAnchor)
+  ? (st.runStart ? watchAnchor.el + (Date.now() - watchAnchor.at) : st.acc)
+  : st.acc + (st.runStart ? Date.now() - st.runStart : 0);
 const mmss = sec => { sec = Math.max(0, Math.floor(sec)); return `${pad(Math.floor(sec/60))}:${pad(sec%60)}`; };
 function pShort(p){ const n = S().periods; return (n === 2 ? 'H' : n === 4 ? 'K' : 'P') + p; }
 function pLong(p){
@@ -1138,6 +1143,8 @@ async function publish(){
   }
 }
 window.addEventListener('online', schedulePublish);
+// tijdens het spel elke 20 s een sync, zodat de klok bij de ouders gelijk blijft lopen
+setInterval(() => { if (!VIEWER && st.live && st.status === 'running') publish(); }, 20000);
 const liveUrl = () => `${location.origin}${location.pathname}?volg=${st.live}`;
 const liveStateHtml = () => pubState === 'ok' ? '✅ Verbonden – ouders zien elke actie meteen'
   : pubState === 'err' ? '⚠️ Geen verbinding – nieuwe acties worden doorgestuurd zodra er weer internet is'
@@ -1211,7 +1218,14 @@ function renderWatch(){
   $('#w-pdf').style.display = st.status === 'finished' ? '' : 'none';
   tick();
 }
-function applyRemote(d){
+function applyRemote(d, fresh){
+  if (d){
+    // gespeelde tijd op het moment dat de coach publiceerde (enkel coach-klok gebruikt: geen klokverschil)
+    const elPub = d.runStart ? (d.acc || 0) + Math.max(0, (d.updated || 0) - d.runStart) : (d.acc || 0);
+    if (fresh) watchAnchor = {el: elPub + 200, at: Date.now()};                // net doorgestuurd (~0,2 s onderweg)
+    else if (!watchAnchor || d.updated !== lastUpdate)                         // oudere momentopname: beste schatting
+      watchAnchor = {el: elPub + Math.max(0, Date.now() - (d.updated || Date.now())), at: Date.now()};
+  }
   if (!d){ $('#w-status').textContent = 'Wedstrijd niet gevonden'; return; }
   Object.assign(st.setup, d.setup || {});
   st.status = d.status || 'ready'; st.period = d.period || 1; st.acc = d.acc || 0; st.runStart = d.runStart || null;
@@ -1229,8 +1243,9 @@ function startWatch(){
   try {
     watchES && watchES.close();
     watchES = new EventSource(`${LIVE.dbUrl}/matches/${encodeURIComponent(VOLG)}.json`);
-    watchES.onopen = () => { watchConnected = true; };
-    watchES.addEventListener('put', ev => { const m = JSON.parse(ev.data); if (m.path === '/') applyRemote(m.data); else fetchOnce(); });
+    let first = true;   // de eerste 'put' na verbinden is een momentopname, de volgende zijn verse updates
+    watchES.onopen = () => { watchConnected = true; first = true; };
+    watchES.addEventListener('put', ev => { const m = JSON.parse(ev.data); if (m.path === '/') applyRemote(m.data, !first); else fetchOnce(); first = false; });
     watchES.addEventListener('patch', fetchOnce);
     watchES.onerror = () => { watchConnected = false; };
   } catch {}
