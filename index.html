@@ -113,6 +113,27 @@
       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11.5px;font-weight:700;line-height:1.1;text-align:center;padding:4px}
   .ico{width:22px;height:22px;flex:none;color:#b4b4b4;vertical-align:-4px}
   .ev .ico{width:28px;height:28px}
+  /* overige symbolen in knoppen, menu's en labels */
+  .btn .ico,.seg .ico{width:20px;height:20px}
+  .btn.primary .ico,.seg button.on .ico,.toast button .ico{color:#111}
+  .btn.danger .ico{color:var(--danger)}
+  .seg button{display:inline-flex;align-items:center;justify-content:center;gap:7px}
+  .iconbtn{display:inline-flex;align-items:center;justify-content:center}
+  .iconbtn .ico{width:22px;height:22px}
+  .chip{display:inline-flex;align-items:center;gap:6px} .chip .ico{width:16px;height:16px}
+  .menu button .e .ico{width:22px;height:22px}
+  .tl li.sys span{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+  .tl li.sys .ico{width:15px;height:15px}
+  .fchip .ico{width:16px;height:16px;margin-right:4px;color:#7fc792;vertical-align:-3px}
+  .gkmark .ico{width:16px;height:16px;color:#111}
+  .num.add b .ico{width:24px;height:24px}
+  .sub .ico,.q .ico,#w-upd .ico,.banner .ico{width:18px;height:18px;margin-right:6px;vertical-align:-4px}
+  #w-upd .ico{width:16px;height:16px;margin-right:4px}
+  .banner .ico{color:#ffcf8a}
+  .toast button{display:inline-flex;align-items:center;gap:5px} .toast button .ico{width:16px;height:16px}
+  .controls .btn{white-space:nowrap;padding:0 10px}
+  #l-end{font-size:17px;gap:6px}
+  .ico.spin{animation:spin 1s linear infinite} @keyframes spin{to{transform:rotate(360deg)}}
   .sheet h3 .ico{width:24px;height:24px}
   .toast .ico{width:18px;height:18px;color:#111;margin-right:6px;vertical-align:-3px}
   .scorers .ico{width:15px;height:15px;margin-right:5px;vertical-align:-2px}
@@ -235,6 +256,37 @@
       <path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></g></symbol>
     <symbol id="i-note" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M6 3h8.5L19 7.5V21H6z"/><path d="M14.5 3v4.5H19"/><path d="M9 12h7M9 16h5"/></g></symbol>
+    <!-- overige symbolen (zelfde stijl) -->
+    <symbol id="s-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="s-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="s-next" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5.5v13l9-6.5z"/><path d="M18.5 5v14"/></g></symbol>
+    <symbol id="s-finish" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V3.5" fill="none"/><path d="M5 4h14v9H5" fill="none"/><path d="M5 4h4.7v4.5H5zM14.3 4H19v4.5h-4.7zM9.7 8.5h4.6V13H9.7z" fill="currentColor" stroke-width="0"/></g></symbol>
+    <symbol id="s-lineup" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5h6v3H9z"/><path d="M7.5 5H5.5v16h13V5h-2"/><circle cx="9" cy="11.5" r="1.2" fill="currentColor"/><circle cx="15" cy="11.5" r="1.2" fill="currentColor"/><circle cx="12" cy="16.5" r="1.2" fill="currentColor"/></g></symbol>
+    <symbol id="s-keeper" viewBox="0 0 24 24"><path d="M8 21v-3.5L5 13.8a1.7 1.7 0 0 1 2.6-2.2L9 13V5.5a1.5 1.5 0 0 1 3 0V11V4a1.5 1.5 0 0 1 3 0v7V5.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-3 5.2V21z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="s-live" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M8.6 8.6a4.8 4.8 0 0 0 0 6.8M15.4 8.6a4.8 4.8 0 0 1 0 6.8M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"/></g></symbol>
+    <symbol id="s-more" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5.5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="18.5" cy="12" r="1.8"/></g></symbol>
+    <symbol id="s-settings" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/></g></symbol>
+    <symbol id="s-undo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></g></symbol>
+    <symbol id="s-report" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18H6z"/><path d="M9.5 17v-3M12 17v-7M14.5 17v-5"/></g></symbol>
+    <symbol id="s-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="s-share" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 11v8.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V11"/></g></symbol>
+    <symbol id="s-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></g></symbol>
+    <symbol id="s-chat" viewBox="0 0 24 24"><path d="M5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-4.5 4V5.5A1.5 1.5 0 0 1 5.5 4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="s-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></g></symbol>
+    <symbol id="s-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 10A7.5 7.5 0 0 0 6 6.5L4.5 8M4.5 14A7.5 7.5 0 0 0 18 17.5l1.5-1.5"/><path d="M4.5 3.5V8H9M19.5 20.5V16H15"/></g></symbol>
+    <symbol id="s-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+    <symbol id="s-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9.5H4z"/><path d="M10 20.5V15h4v5.5"/></g></symbol>
+    <symbol id="s-away" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="14" rx="2.5"/><path d="M4 10.5h16M8 17.5v2.5M16 17.5v2.5"/><circle cx="8" cy="14" r=".8" fill="currentColor"/><circle cx="16" cy="14" r=".8" fill="currentColor"/></g></symbol>
+    <symbol id="s-hourglass" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10M7 21h10"/><path d="M8 3v2.5a4 4 0 0 0 1.6 3.2L12 12l2.4-3.3A4 4 0 0 0 16 5.5V3M8 21v-2.5a4 4 0 0 1 1.6-3.2L12 12l2.4 3.3a4 4 0 0 1 1.6 3.2V21"/></g></symbol>
+    <symbol id="s-stopwatch" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.5h4M12 2.5V6M18.3 6.8l1.4-1.4"/></g></symbol>
+    <symbol id="s-bell" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></g></symbol>
+    <symbol id="s-trash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13.5h9l1-13.5"/><path d="M10 11v5.5M14 11v5.5"/></g></symbol>
+    <symbol id="s-shirt" viewBox="0 0 24 24"><path d="M9 3.5a3 3 0 0 0 6 0l5.5 3-2 4.2-2.5-1.2v11.5H8V9.5l-2.5 1.2-2-4.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="s-edit" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5z"/><path d="M13.5 7l3 3"/></g></symbol>
+    <symbol id="s-ok" viewBox="0 0 24 24"><g fill="none" stroke="#4caf6a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.7 2.7L16 9.5"/></g></symbol>
+    <symbol id="s-warn" viewBox="0 0 24 24"><g fill="none" stroke="#ff9f1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4.5M12 17.3v.2"/></g></symbol>
+    <symbol id="s-denied" viewBox="0 0 24 24"><g fill="none" stroke="#ff5a5f" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.7 5.7l12.6 12.6"/></g></symbol>
+    <symbol id="s-busy" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 1-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
   </defs>
 </svg>
 <div class="wrap">
@@ -253,8 +305,8 @@
       <div class="swatches" id="s-oppColor"></div>
       <label class="f">Wij spelen</label>
       <div class="seg" id="s-home">
-        <button data-home="1">🏠 Thuis</button>
-        <button data-home="0">🚌 Uit</button>
+        <button data-home="1"><svg class="ico" aria-hidden="true"><use href="#s-home"/></svg>Thuis</button>
+        <button data-home="0"><svg class="ico" aria-hidden="true"><use href="#s-away"/></svg>Uit</button>
       </div>
     </div>
 
@@ -275,8 +327,8 @@
       <div class="stepper"><button data-step="fieldSize:-1">−</button><div class="val" id="s-fieldSize">8</div><button data-step="fieldSize:1">+</button></div>
       <label class="f" style="margin-top:14px">Klok toont</label>
       <div class="seg" id="s-count">
-        <button data-count="down">⏳ Resterend</button>
-        <button data-count="up">⏱ Gespeeld</button>
+        <button data-count="down"><svg class="ico" aria-hidden="true"><use href="#s-hourglass"/></svg>Resterend</button>
+        <button data-count="up"><svg class="ico" aria-hidden="true"><use href="#s-stopwatch"/></svg>Gespeeld</button>
       </div>
     </div>
 
@@ -285,11 +337,11 @@
       <label class="f">Aantal spelers in de selectie</label>
       <div class="stepper" style="margin-bottom:14px"><button data-step="squadSize:-1">−</button><div class="val" id="s-squadSize">12</div><button data-step="squadSize:1">+</button></div>
       <div class="nums" id="s-nums"></div>
-      <div class="hint">Tik op een rugnummer om een naam toe te voegen. Heeft een speler een hoger nummer? Gebruik ＋ nummer. De spelers worden onthouden voor de volgende wedstrijd.</div>
-      <button class="btn danger block" id="s-resetPlayers" style="margin-top:12px">🗑 Alle namen wissen</button>
+      <div class="hint">Tik op een rugnummer om een naam toe te voegen. Heeft een speler een hoger nummer? Gebruik + nummer. De spelers worden onthouden voor de volgende wedstrijd.</div>
+      <button class="btn danger block" id="s-resetPlayers" style="margin-top:12px"><svg class="ico" aria-hidden="true"><use href="#s-trash"/></svg>Alle namen wissen</button>
     </div>
 
-    <button class="btn primary big block" id="s-go">Naar de wedstrijd ▶</button>
+    <button class="btn primary big block" id="s-go">Naar de wedstrijd</button>
   </section>
 
   <!-- ================= LIVE ================= -->
@@ -297,8 +349,8 @@
     <div class="topbar">
       <span class="pill" id="l-status">Klaar</span>
       <div class="row" style="gap:8px">
-        <button class="iconbtn livebtn" id="l-live" aria-label="Live link delen">📡</button>
-        <button class="iconbtn" id="l-menu" aria-label="Menu">⋯</button>
+        <button class="iconbtn livebtn" id="l-live" aria-label="Live link delen"><svg class="ico" aria-hidden="true"><use href="#s-live"/></svg></button>
+        <button class="iconbtn" id="l-menu" aria-label="Menu"><svg class="ico" aria-hidden="true"><use href="#s-more"/></svg></button>
       </div>
     </div>
 
@@ -319,7 +371,7 @@
     <div class="banner" id="l-banner"><span id="l-bannerTx"></span><button class="btn" style="min-height:40px" id="l-bannerBtn"></button></div>
 
     <div class="controls" id="l-controls">
-      <button class="btn primary big" id="l-main">▶ Aftrap</button>
+      <button class="btn primary big" id="l-main"><svg class="ico" aria-hidden="true"><use href="#s-play"/></svg>Aftrap</button>
       <button class="btn big" id="l-end"></button>
     </div>
 
@@ -357,7 +409,7 @@
     <div class="card" id="w-field"></div>
     <div class="card"><h2>Doelpunten</h2><div class="scorers" id="w-scorers"></div></div>
     <div class="card"><h2>Tijdlijn</h2><ul class="tl" id="w-tl"></ul></div>
-    <button class="btn block" id="w-pdf">📄 Verslag downloaden (PDF)</button>
+    <button class="btn block" id="w-pdf"><svg class="ico" aria-hidden="true"><use href="#s-download"/></svg>Verslag downloaden (PDF)</button>
   </section>
 
   <!-- ================= VERSLAG ================= -->
@@ -376,23 +428,23 @@
       <div class="small muted" id="r-meta" style="margin-top:10px;text-align:center"></div>
     </div>
     <div class="actions" style="margin-bottom:12px">
-      <button class="btn primary big" id="r-pdf">📄 PDF-verslag delen</button>
+      <button class="btn primary big" id="r-pdf"><svg class="ico" aria-hidden="true"><use href="#s-share"/></svg>PDF-verslag delen</button>
       <div class="row">
-        <button class="btn grow" id="r-dl">⬇ PDF downloaden</button>
-        <button class="btn grow" id="r-txt">💬 Delen als tekst</button>
+        <button class="btn grow" id="r-dl"><svg class="ico" aria-hidden="true"><use href="#s-download"/></svg>PDF downloaden</button>
+        <button class="btn grow" id="r-txt"><svg class="ico" aria-hidden="true"><use href="#s-chat"/></svg>Delen als tekst</button>
       </div>
     </div>
     <div class="card"><h2>Score per periode</h2><table class="ptable" id="r-ptable"></table></div>
     <div class="card"><h2>Statistieken</h2><div id="r-stats"></div></div>
     <div class="card"><h2>Doelpunten</h2><div class="scorers" id="r-scorers"></div></div>
     <div class="card"><h2>Alle acties</h2><ul class="tl" id="r-tl"></ul></div>
-    <button class="btn block" id="r-new">＋ Nieuwe wedstrijd</button>
+    <button class="btn block" id="r-new"><svg class="ico" aria-hidden="true"><use href="#s-plus"/></svg>Nieuwe wedstrijd</button>
   </section>
 </div>
 
 <div class="scrim" id="scrim"></div>
 <div class="sheet" id="sheet"><div class="grab"></div><div id="sheetBody"></div></div>
-<div class="toast" id="toast"><span id="toastTx"></span><button id="toastBtn">↩ Ongedaan</button></div>
+<div class="toast" id="toast"><span id="toastTx"></span><button id="toastBtn"><svg class="ico" aria-hidden="true"><use href="#s-undo"/></svg>Ongedaan</button></div>
 
 <script>
 'use strict';
@@ -408,6 +460,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad = n => String(n).padStart(2, '0');
+const sym = (k, c = '') => `<svg class="ico ${c}" aria-hidden="true"><use href="#s-${k}"/></svg>`;   // overige symbolen
 const ico = k => `<svg class="ico" aria-hidden="true"><use href="#i-${k}"/></svg>`;   // icoon van een actie
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -439,7 +492,7 @@ const QUESTION_BY_TYPE = {
   injury:{player:'Wie is geblesseerd?'}, chance:{player:'Wie had de kans?'}, shot:{player:'Wie schoot?'}
 };
 const FIELD_LABEL = {player:'Speler', assist:'Assist', in:'Erin', out:'Eruit'};
-const SYS = {period_start:'▶', period_end:'⏸', lineup:'📋'};
+const SYS = {period_start:'play', period_end:'pause', lineup:'lineup'};
 
 /* ---------- state ---------- */
 function loadPrefs(){ try { return JSON.parse(localStorage.getItem(PREF)) || {}; } catch { return {}; } }
@@ -579,8 +632,8 @@ function renderSetup(){
   $('#s-nums').innerHTML = [...nums].sort((a, b) => a - b).map(n => {
     const name = (s.players[n] || '').trim();
     return `<button class="num ${name ? 'has' : ''}" data-num="${n}"><b>${n}</b>${name ? `<span>${esc(name)}</span>` : ''}</button>`;
-  }).join('') + `<button class="num add" data-num="new"><b>＋</b><span>nummer</span></button>`;
-  $('#s-go').textContent = st.status === 'setup' ? 'Naar de wedstrijd ▶' : 'Opslaan & terug naar wedstrijd ▶';
+  }).join('') + `<button class="num add" data-num="new"><b>${sym('plus')}</b><span>nummer</span></button>`;
+  $('#s-go').innerHTML = (st.status === 'setup' ? 'Naar de wedstrijd' : 'Opslaan & terug naar wedstrijd') + sym('play');
 }
 ['team', 'opponent'].forEach(k => $('#s-' + k).addEventListener('input', e => { S()[k] = e.target.value; save(); }));
 $('#s-oppColor').addEventListener('click', e => { const b = e.target.closest('[data-color]'); if (!b) return; S().oppColor = b.dataset.color; save(); renderSetup(); });
@@ -614,7 +667,7 @@ function openPlayerSheet(num){
   const isNew = num === 'new';
   const name = isNew ? '' : (S().players[num] || '');
   openSheet(`
-    <h3>👕 ${isNew ? 'Nieuw rugnummer' : 'Rugnummer ' + num}</h3>
+    <h3>${sym('shirt')} ${isNew ? 'Nieuw rugnummer' : 'Rugnummer ' + num}</h3>
     ${isNew ? `<label class="f">Rugnummer</label><input type="number" inputmode="numeric" id="pl-num" min="1" max="99" placeholder="bv. 33">` : ''}
     <label class="f">Naam</label>
     <input type="text" id="pl-name" value="${esc(name)}" placeholder="Voornaam" autocomplete="off" autocapitalize="words">
@@ -659,14 +712,14 @@ function renderLive(){
 
   const main = $('#l-main'), end = $('#l-end'), ctr = $('#l-controls'), status = $('#l-status');
   status.className = 'pill' + (st.status === 'running' ? ' live' : '');
-  const last = st.period >= n, endTxt = last ? '🏁 Einde match' : `⏭ Einde ${pShort(st.period)}`;
+  const last = st.period >= n, endTxt = last ? sym('finish') + 'Einde match' : sym('next') + `Einde ${pShort(st.period)}`;
   ctr.classList.remove('single'); end.style.display = '';
   switch (st.status){
-    case 'ready':   main.textContent = '▶ Aftrap'; status.textContent = `${cap(pLong(1))} · nog niet gestart`; ctr.classList.add('single'); end.style.display = 'none'; break;
-    case 'running': main.textContent = '⏸ Pauze'; status.textContent = cap(pLong(st.period)); end.textContent = endTxt; break;
-    case 'paused':  main.textContent = '▶ Hervat'; status.textContent = `${cap(pLong(st.period))} · gepauzeerd`; end.textContent = endTxt; break;
-    case 'break':   main.textContent = `▶ Start ${pShort(st.period + 1)}`; status.textContent = `Rust na ${pShort(st.period)}`; end.textContent = '🏁 Einde match'; break;
-    case 'finished':main.textContent = '📄 Verslag & PDF'; status.textContent = 'Einde wedstrijd'; ctr.classList.add('single'); end.style.display = 'none'; break;
+    case 'ready':   main.innerHTML = sym('play') + 'Aftrap'; status.textContent = `${cap(pLong(1))} · nog niet gestart`; ctr.classList.add('single'); end.style.display = 'none'; break;
+    case 'running': main.innerHTML = sym('pause') + 'Pauze'; status.textContent = cap(pLong(st.period)); end.innerHTML = endTxt; break;
+    case 'paused':  main.innerHTML = sym('play') + 'Hervat'; status.textContent = `${cap(pLong(st.period))} · gepauzeerd`; end.innerHTML = endTxt; break;
+    case 'break':   main.innerHTML = sym('play') + `Start ${pShort(st.period + 1)}`; status.textContent = `Rust na ${pShort(st.period)}`; end.innerHTML = sym('finish') + 'Einde match'; break;
+    case 'finished':main.innerHTML = sym('report') + 'Verslag & PDF'; status.textContent = 'Einde wedstrijd'; ctr.classList.add('single'); end.style.display = 'none'; break;
   }
   renderField($('#l-field'), true);
   renderTimeline($('#l-tl'), true);
@@ -677,8 +730,8 @@ function renderTimeline(ul, newestFirst){
   let evs = sortedEvents(); if (newestFirst) evs.reverse();
   if (!evs.length){ ul.innerHTML = `<li class="empty" style="display:block;border:0">${VIEWER ? 'Nog geen acties.' : 'Nog geen acties. Kies hierboven een team en tik op een actie.'}</li>`; return; }
   ul.innerHTML = evs.map(e => {
-    if (e.type === 'lineup') return `<li class="sys"><span>📋 ${e.start ? 'Opstelling ' + pShort(e.period) : 'Opstelling aangepast ' + mmss(e.sec)}: ${esc((e.players || []).map(pnum).join(', '))}${e.keeper ? ' · 🧤 ' + pnum(e.keeper) : ''}</span></li>`;
-    if (e.sys) return `<li class="sys"><span>${SYS[e.type]} ${esc(describe(e))} · ${mmss(e.sec)}</span></li>`;
+    if (e.type === 'lineup') return `<li class="sys"><span>${sym('lineup')}${e.start ? 'Opstelling ' + pShort(e.period) : 'Opstelling aangepast ' + mmss(e.sec)}: ${esc((e.players || []).map(pnum).join(', '))}${e.keeper ? ' · ' + sym('keeper') + pnum(e.keeper) : ''}</span></li>`;
+    if (e.sys) return `<li class="sys"><span>${sym(SYS[e.type])}${esc(describe(e))} · ${mmss(e.sec)}</span></li>`;
     const t = TYPES[e.type];
     return `<li class="tap" data-id="${e.id}">
       <div class="tm"><b>${matchMinute(e)}</b>${pShort(e.period)} ${mmss(e.sec)}</div>
@@ -700,7 +753,7 @@ function tick(){
       : `${pShort(st.period)} · ${S().countDown ? mmss(el / 1000) + ' gespeeld' : mmss(Math.max(0, L - el) / 1000) + ' resterend'} van ${S().periodMin}:00 · tik om aan te passen`;
     const showBan = st.status === 'running' && over;
     $('#l-banner').classList.toggle('on', showBan);
-    if (showBan){ $('#l-bannerTx').textContent = `⏰ Tijd is om (${pShort(st.period)})`; $('#l-bannerBtn').textContent = st.period >= S().periods ? 'Einde match' : `Einde ${pShort(st.period)}`; }
+    if (showBan){ $('#l-bannerTx').innerHTML = sym('bell') + `Tijd is om (${pShort(st.period)})`; $('#l-bannerBtn').textContent = st.period >= S().periods ? 'Einde match' : `Einde ${pShort(st.period)}`; }
   }
   if (st.view === 'watch'){
     const over = el > L, running = st.status === 'running' || st.status === 'paused';
@@ -741,15 +794,15 @@ function renderField(box, editable){
   const title = forNext ? `Opstelling ${pShort(st.period + 1)}` : 'Op het veld';
   if (!lu || !lu.size){
     box.innerHTML = `<h2>${title}</h2><div class="muted small">${editable ? 'Nog geen opstelling gekozen.' : 'Opstelling nog niet doorgegeven.'}</div>
-      ${editable ? `<button class="btn block" data-lineup style="margin-top:10px">📋 Opstelling kiezen</button>` : ''}`;
+      ${editable ? `<button class="btn block" data-lineup style="margin-top:10px">${sym('lineup')}Opstelling kiezen</button>` : ''}`;
     return;
   }
   const on = [...lu.entries()].sort((a, b) => a[0] - b[0]);
   const bench = editable ? roster().filter(p => !lu.has(p.num)) : [];
   box.innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">${title} (${on.length})</h2>
-      ${editable ? `<button class="chip" data-lineup>✏️ Wijzig</button>` : ''}</div>
+      ${editable ? `<button class="chip" data-lineup>${sym('edit')}Wijzig</button>` : ''}</div>
     <div class="fchips">${on.map(([n, l]) => { const name = String(l).replace(/^#\d+\s*/, ''), gk = lu.keeper && pnum(lu.keeper) === n;
-      return `<span class="fchip${gk ? ' gk' : ''}">${gk ? '🧤 ' : ''}<b>${n}</b>${esc(name)}</span>`; }).join('')}</div>
+      return `<span class="fchip${gk ? ' gk' : ''}">${gk ? sym('keeper') : ''}<b>${n}</b>${esc(name)}</span>`; }).join('')}</div>
     ${bench.length ? `<div class="small muted" style="margin-top:8px">Bank: ${bench.map(p => `${p.num} ${esc(p.name)}`).join(' · ')}</div>` : ''}`;
 }
 /* Opstelling kiezen. start=true: begin van een periode (tijd 0), anders een wijziging nu. */
@@ -762,10 +815,10 @@ function openLineupSheet({title, period, start, primary, skip, onDone}){
     const list = squadList();
     if (gk && !sel.has(gk)) gk = null;
     const chosen = list.filter(p => sel.has(p.num));
-    openSheet(`<h3>📋 ${title}</h3>
+    openSheet(`<h3>${sym('lineup')} ${title}</h3>
       <div class="sub">Tik de spelers aan die op het veld staan · <b style="color:${sel.size === max ? 'var(--accent)' : 'var(--warn)'}">${sel.size} / ${max} gekozen</b></div>
-      <div class="pgrid">${list.map(p => `<button class="pcard ${sel.has(p.num) ? 'on' : ''}" data-n="${p.num}">${gk === p.num ? '<i class="gkmark">🧤</i>' : ''}<b>${p.num}</b>${p.name ? `<span>${esc(p.name)}</span>` : ''}</button>`).join('')}</div>
-      <div class="q" style="margin-top:16px">🧤 Keeper</div>
+      <div class="pgrid">${list.map(p => `<button class="pcard ${sel.has(p.num) ? 'on' : ''}" data-n="${p.num}">${gk === p.num ? '<i class="gkmark">' + sym('keeper') + '</i>' : ''}<b>${p.num}</b>${p.name ? `<span>${esc(p.name)}</span>` : ''}</button>`).join('')}</div>
+      <div class="q" style="margin-top:16px">${sym('keeper')} Keeper</div>
       ${chosen.length ? `<div class="chips">${chosen.map(p => `<button class="chip ${gk === p.num ? 'on' : ''}" data-gk="${p.num}">${p.num}${p.name ? ' ' + esc(p.name) : ''}</button>`).join('')}</div>`
         : '<div class="muted small">Kies eerst de spelers hierboven.</div>'}
       <div class="row" style="margin-top:14px"><button class="btn grow" id="lu-skip">${skip}</button><button class="btn primary grow" id="lu-ok">${primary}</button></div>`);
@@ -964,7 +1017,7 @@ function openEditSheet(ev){
     ${fields.map(f => `<label class="f">${FIELD_LABEL[f]}</label><input type="text" data-field="${f}" value="${esc(ev[f])}" placeholder="bv. #7 Lucas" autocomplete="off">`).join('')}
     <label class="f">Notitie</label>
     <input type="text" data-field="note" value="${esc(ev.note)}" placeholder="optioneel">
-    <div class="row" style="margin-top:16px"><button class="btn danger" id="ed-del">🗑 Verwijder</button><button class="btn primary grow" id="ed-ok">Opslaan</button></div>`);
+    <div class="row" style="margin-top:16px"><button class="btn danger" id="ed-del">${sym('trash')}Verwijder</button><button class="btn primary grow" id="ed-ok">Opslaan</button></div>`);
   const paint = () => $$('#ed-team button').forEach(b => b.classList.toggle('on', b.dataset.team === side));
   paint();
   $('#sheetBody').onclick = e => {
@@ -981,7 +1034,7 @@ function openEditSheet(ev){
 
 function openClockSheet(){
   const draw = () => openSheet(`
-    <h3>⏱ Klok – ${pLong(st.period)}</h3>
+    <h3>${sym('stopwatch')} Klok – ${pLong(st.period)}</h3>
     <div class="sub">Gespeelde tijd in deze periode</div>
     <div style="text-align:center;font-size:48px;font-weight:900;font-variant-numeric:tabular-nums" id="sheetClock">${mmss(elapsed() / 1000)}</div>
     <div class="adj">
@@ -998,7 +1051,7 @@ function openClockSheet(){
         <div class="stepper"><button data-ck="periods:-1">−</button><div class="val">${S().periods}</div><button data-ck="periods:1">+</button></div></div>
     </div>
     <label class="f">Klok toont</label>
-    <div class="seg"><button data-cnt="down" class="${S().countDown ? 'on' : ''}">⏳ Resterend</button><button data-cnt="up" class="${S().countDown ? '' : 'on'}">⏱ Gespeeld</button></div>
+    <div class="seg"><button data-cnt="down" class="${S().countDown ? 'on' : ''}">${sym('hourglass')}Resterend</button><button data-cnt="up" class="${S().countDown ? '' : 'on'}">${sym('stopwatch')}Gespeeld</button></div>
     <button class="btn primary block" style="margin-top:16px" id="ck-done">Klaar</button>`);
   const setEl = ms => { st.acc = Math.max(0, ms); if (st.runStart) st.runStart = Date.now(); if (st.acc < lenMs()) st.alarmed[st.period] = false; save(); tick(); };
   const bind = () => { $('#sheetBody').onclick = e => {
@@ -1017,12 +1070,12 @@ function openClockSheet(){
 function openMenu(){
   const lastEv = [...st.events].reverse().find(e => !e.sys);
   openSheet(`<h3>Menu</h3><div class="menu">
-    <button data-m="setup"><span class="e">⚙️</span>Teams, spelers & speelwijze</button>
-    ${lastEv ? `<button data-m="undo"><span class="e">↩️</span>Laatste actie ongedaan maken <span class="muted small">(${esc(TYPES[lastEv.type].label)})</span></button>` : ''}
-    <button data-m="live"><span class="e">📡</span>Live link voor ouders${st.live ? ' <span class="muted small">(actief)</span>' : ''}</button>
-    <button data-m="summary"><span class="e">📄</span>Verslag & PDF</button>
-    ${st.status !== 'finished' ? `<button data-m="finish"><span class="e">🏁</span>Wedstrijd nu beëindigen</button>` : ''}
-    <button data-m="new"><span class="e">＋</span>Nieuwe wedstrijd</button>
+    <button data-m="setup"><span class="e">${sym('settings')}</span>Teams, spelers & speelwijze</button>
+    ${lastEv ? `<button data-m="undo"><span class="e">${sym('undo')}</span>Laatste actie ongedaan maken <span class="muted small">(${esc(TYPES[lastEv.type].label)})</span></button>` : ''}
+    <button data-m="live"><span class="e">${sym('live')}</span>Live link voor ouders${st.live ? ' <span class="muted small">(actief)</span>' : ''}</button>
+    <button data-m="summary"><span class="e">${sym('report')}</span>Verslag & PDF</button>
+    ${st.status !== 'finished' ? `<button data-m="finish"><span class="e">${sym('finish')}</span>Wedstrijd nu beëindigen</button>` : ''}
+    <button data-m="new"><span class="e">${sym('plus')}</span>Nieuwe wedstrijd</button>
   </div>`);
   $('#sheetBody').onclick = e => {
     const b = e.target.closest('[data-m]'); if (!b) return; const m = b.dataset.m; closeSheet();
@@ -1403,11 +1456,11 @@ async function cleanupOldMatches(){
    naar /viewers/<wedstrijd>/<code>. Wie de laatste 70 s een seintje gaf, telt als kijker. */
 const VIEW_WINDOW = 70000;
 let srvOffset = 0, viewerCount = null;
-const viewerText = n => n == null ? '' : n === 1 ? '👀 1 kijker' : `👀 ${n} kijkers`;
+const viewerText = n => n == null ? '' : n === 1 ? sym('eye') + '1 kijker' : sym('eye') + `${n} kijkers`;
 const countRecent = (obj, nowSrv) => Object.values(obj || {}).filter(t => typeof t === 'number' && t > nowSrv - VIEW_WINDOW).length;
 function showViewerCount(){
   const b = $('#l-live'); if (b) b.dataset.count = st.live && viewerCount ? viewerCount : '';
-  const s = $('#lv-viewers'); if (s) s.textContent = viewerText(viewerCount);
+  const s = $('#lv-viewers'); if (s) s.innerHTML = viewerText(viewerCount);
 }
 async function pollViewers(){            // coach
   if (VIEWER || !st.live || !liveReady()) return;
@@ -1427,7 +1480,7 @@ async function viewerBeat(){             // ouder
     const now = await r.json();
     const g = await fetch(`${LIVE.dbUrl}/viewers/${encodeURIComponent(VOLG)}.json`);
     viewerCount = countRecent(await g.json(), typeof now === 'number' ? now : Date.now() + srvOffset);
-    $('#w-upd').textContent = wUpdText();
+    $('#w-upd').innerHTML = wUpdText();
   } catch {}
 }
 function leaveViewer(){ if (VIEWER && liveReady()) fetch(viewerUrl(), {method:'DELETE', keepalive:true}).catch(() => {}); }
@@ -1435,35 +1488,35 @@ const wUpdText = () => [viewerText(viewerCount), lastUpdate ? 'Bijgewerkt ' + ne
   .filter(Boolean).join(' · ');
 
 const liveUrl = () => `${location.origin}${location.pathname}?volg=${st.live}`;
-const liveStateHtml = () => pubState === 'ok' ? '✅ Verbonden – ouders zien elke actie meteen'
-  : pubState === 'err' ? '⚠️ Geen verbinding – nieuwe acties worden doorgestuurd zodra er weer internet is'
-  : pubState === 'denied' ? '⛔ Deze link kan niet meer bijgewerkt worden. Tik op "Nieuwe link" en deel die opnieuw.'
-  : '⏳ Verbinden…';
+const liveStateHtml = () => pubState === 'ok' ? sym('ok') + 'Verbonden – ouders zien elke actie meteen'
+  : pubState === 'err' ? sym('warn') + 'Geen verbinding – nieuwe acties worden doorgestuurd zodra er weer internet is'
+  : pubState === 'denied' ? sym('denied') + 'Deze link kan niet meer bijgewerkt worden. Tik op "Nieuwe link" en deel die opnieuw.'
+  : sym('busy', 'spin') + 'Verbinden…';
 function openLiveSheet(){
   if (!liveReady()){
-    openSheet(`<h3>📡 Live link voor ouders</h3><div class="sub">Live delen is nog niet ingesteld (Firebase-gegevens ontbreken).</div>
+    openSheet(`<h3>${sym('live')} Live link voor ouders</h3><div class="sub">Live delen is nog niet ingesteld (Firebase-gegevens ontbreken).</div>
       <button class="btn block" id="lv-close">Sluiten</button>`);
     $('#sheetBody').onclick = e => { if (e.target.closest('#lv-close')) closeSheet(); };
     return;
   }
   if (!st.live){
-    openSheet(`<h3>📡 Live link voor ouders</h3>
+    openSheet(`<h3>${sym('live')} Live link voor ouders</h3>
       <div class="sub">Deel een link zodat andere ouders de score, de klok en alle acties live kunnen volgen. Ze kunnen niets aanpassen.
       Wie de link heeft, ziet de namen van de spelers die je bij acties kiest.</div>
-      <button class="btn primary big block" id="lv-start">📡 Start live delen</button>`);
+      <button class="btn primary big block" id="lv-start">${sym('live')}Start live delen</button>`);
     $('#sheetBody').onclick = e => {
       if (e.target.closest('#lv-start')){ st.live = newLiveId(); setPub('busy'); save(); openLiveSheet(); renderLive(); }
     };
     return;
   }
-  openSheet(`<h3>📡 Live link voor ouders</h3>
+  openSheet(`<h3>${sym('live')} Live link voor ouders</h3>
     <div class="sub" id="lv-state">${liveStateHtml()}</div>
     <div class="sub" id="lv-viewers" style="margin-top:-6px">${viewerText(viewerCount)}</div>
     <div class="linkbox">${esc(liveUrl())}</div>
-    <button class="btn primary big block" id="lv-share">📤 Link delen</button>
+    <button class="btn primary big block" id="lv-share">${sym('share')}Link delen</button>
     <div class="row" style="margin-top:10px">
-      <button class="btn grow" id="lv-copy">📋 Kopieer</button>
-      <button class="btn grow" id="lv-new">🔄 Nieuwe link</button>
+      <button class="btn grow" id="lv-copy">${sym('copy')}Kopieer</button>
+      <button class="btn grow" id="lv-new">${sym('refresh')}Nieuwe link</button>
     </div>
     <button class="btn danger block" id="lv-stop" style="margin-top:10px">Stop live delen</button>`);
   $('#sheetBody').onclick = async e => {
@@ -1502,7 +1555,7 @@ function renderWatch(){
   const ws = $('#w-status'); ws.textContent = ended ? 'Live gestopt' : watchConnected || lastUpdate ? txt : 'Verbinden…';
   ws.className = 'pill' + (st.status === 'running' && !ended ? ' live' : '');
   $('#w-sub').textContent = `${n} × ${S().periodMin} min`;
-  $('#w-upd').textContent = wUpdText();
+  $('#w-upd').innerHTML = wUpdText();
   $('#w-scorers').innerHTML = order().map(s => { const l = scorers(s);
     return `<div><div style="font-weight:800;color:${sideColor(s)};margin-bottom:4px">${esc(sideName(s))}</div>${l.length ? l.map(x => `<div>${ico('goal')}${esc(x)}</div>`).join('') : '<div class="muted">–</div>'}</div>`; }).join('');
   renderField($('#w-field'), false);
