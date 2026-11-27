@@ -225,6 +225,8 @@
         </div>
       </div>
       <div class="hint" id="s-total"></div>
+      <label class="f" style="margin-top:14px">Spelers op het veld (incl. keeper)</label>
+      <div class="stepper"><button data-step="fieldSize:-1">−</button><div class="val" id="s-fieldSize">8</div><button data-step="fieldSize:1">+</button></div>
       <label class="f" style="margin-top:14px">Klok toont</label>
       <div class="seg" id="s-count">
         <button data-count="down">⏳ Resterend</button>
@@ -234,7 +236,7 @@
 
     <div class="card">
       <h2>Onze spelers</h2>
-      <label class="f">Aantal spelers</label>
+      <label class="f">Aantal spelers in de selectie</label>
       <div class="stepper" style="margin-bottom:14px"><button data-step="squadSize:-1">−</button><div class="val" id="s-squadSize">12</div><button data-step="squadSize:1">+</button></div>
       <div class="nums" id="s-nums"></div>
       <div class="hint">Tik op een rugnummer om een naam toe te voegen. Heeft een speler een hoger nummer? Gebruik ＋ nummer. De spelers worden onthouden voor de volgende wedstrijd.</div>
@@ -397,7 +399,7 @@ function loadPrefs(){ try { return JSON.parse(localStorage.getItem(PREF)) || {};
 function defaultSetup(){
   const p = loadPrefs();
   // klok start altijd op "gespeeld"; tijdens de match kan je wisselen
-  return Object.assign({team:'KWSC Lauwe', opponent:'', weAreHome:true, periods:4, periodMin:15, squadSize:12, players:{}}, p, {opponent:'', oppColor:THEM_COLOR, countDown:false});
+  return Object.assign({team:'KWSC Lauwe', opponent:'', weAreHome:true, periods:4, periodMin:15, squadSize:12, fieldSize:8, players:{}}, p, {opponent:'', oppColor:THEM_COLOR, countDown:false});
 }
 function newMatch(){ return {setup:defaultSetup(), status:'setup', view:'setup', date:today(), period:1, acc:0, runStart:null, events:[], alarmed:{}, sel:'us'}; }
 /* Meekijkmodus: index.html?volg=<id> toont enkel de live wedstrijd, alleen-lezen. */
@@ -411,13 +413,14 @@ if (VIEWER){
   try { st = JSON.parse(localStorage.getItem(KEY)); } catch { st = null; }
   if (!st || !st.setup) st = newMatch();
   if (!st.setup.squadSize) st.setup.squadSize = 12;   // bestaande wedstrijden van vóór deze versie
+  if (!st.setup.fieldSize) st.setup.fieldSize = 8;
 }
 
 function save(){
   if (VIEWER) return;
   localStorage.setItem(KEY, JSON.stringify(st));
   const s = S();
-  localStorage.setItem(PREF, JSON.stringify({team:s.team, weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, squadSize:s.squadSize, players:s.players}));
+  localStorage.setItem(PREF, JSON.stringify({team:s.team, weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, squadSize:s.squadSize, fieldSize:s.fieldSize, players:s.players}));
   schedulePublish();
 }
 
@@ -520,6 +523,7 @@ function renderSetup(){
   $('#s-total').textContent = `${s.periods} × ${s.periodMin} min = ${s.periods * s.periodMin} min speeltijd`;
   $$('#s-count button').forEach(b => b.classList.toggle('on', (b.dataset.count === 'down') === s.countDown));
   $('#s-squadSize').textContent = s.squadSize;
+  $('#s-fieldSize').textContent = s.fieldSize;
   const nums = new Set(Array.from({length:s.squadSize}, (_, i) => i + 1));
   Object.keys(s.players || {}).forEach(n => nums.add(Number(n)));
   $('#s-nums').innerHTML = [...nums].sort((a, b) => a - b).map(n => {
@@ -532,7 +536,7 @@ function renderSetup(){
 $('#s-oppColor').addEventListener('click', e => { const b = e.target.closest('[data-color]'); if (!b) return; S().oppColor = b.dataset.color; save(); renderSetup(); });
 $$('#s-home button').forEach(b => b.addEventListener('click', () => { S().weAreHome = b.dataset.home === '1'; save(); renderSetup(); }));
 $$('[data-step]').forEach(b => b.addEventListener('click', () => {
-  const [k, d] = b.dataset.step.split(':'); const lim = {periods:[1, 8], periodMin:[1, 90], squadSize:[5, 30]}[k];
+  const [k, d] = b.dataset.step.split(':'); const lim = {periods:[1, 8], periodMin:[1, 90], squadSize:[5, 30], fieldSize:[3, 11]}[k];
   S()[k] = Math.min(lim[1], Math.max(lim[0], S()[k] + Number(d))); save(); renderSetup();
 }));
 $$('#s-count button').forEach(b => b.addEventListener('click', () => { S().countDown = b.dataset.count === 'down'; save(); renderSetup(); }));
@@ -695,12 +699,13 @@ function openLineupSheet({title, period, start, primary, skip, onDone}){
   const cur = lineupNow();
   const sel = new Set(cur ? cur.keys() : []);
   let gk = cur && cur.keeper ? pnum(cur.keeper) : null;
+  const max = S().fieldSize || 8;
   const draw = () => {
     const list = squadList();
     if (gk && !sel.has(gk)) gk = null;
     const chosen = list.filter(p => sel.has(p.num));
     openSheet(`<h3>📋 ${title}</h3>
-      <div class="sub">Tik de spelers aan die op het veld staan · <b style="color:var(--accent)">${sel.size} gekozen</b></div>
+      <div class="sub">Tik de spelers aan die op het veld staan · <b style="color:${sel.size === max ? 'var(--accent)' : 'var(--warn)'}">${sel.size} / ${max} gekozen</b></div>
       <div class="pgrid">${list.map(p => `<button class="pcard ${sel.has(p.num) ? 'on' : ''}" data-n="${p.num}">${gk === p.num ? '<i class="gkmark">🧤</i>' : ''}<b>${p.num}</b>${p.name ? `<span>${esc(p.name)}</span>` : ''}</button>`).join('')}</div>
       <div class="q" style="margin-top:16px">🧤 Keeper</div>
       ${chosen.length ? `<div class="chips">${chosen.map(p => `<button class="chip ${gk === p.num ? 'on' : ''}" data-gk="${p.num}">${p.num}${p.name ? ' ' + esc(p.name) : ''}</button>`).join('')}</div>`
@@ -708,11 +713,15 @@ function openLineupSheet({title, period, start, primary, skip, onDone}){
       <div class="row" style="margin-top:14px"><button class="btn grow" id="lu-skip">${skip}</button><button class="btn primary grow" id="lu-ok">${primary}</button></div>`);
     $('#sheetBody').onclick = e => {
       const c = e.target.closest('[data-n]');
-      if (c){ const n = Number(c.dataset.n); sel.has(n) ? sel.delete(n) : sel.add(n); const sc = $('#sheet').scrollTop; draw(); $('#sheet').scrollTop = sc; return; }
+      if (c){
+        const n = Number(c.dataset.n);
+        if (!sel.has(n) && sel.size >= max){ toast(`Maximum ${max} spelers – tik eerst iemand weg`); if (navigator.vibrate) navigator.vibrate(80); return; }
+        sel.has(n) ? sel.delete(n) : sel.add(n); const sc = $('#sheet').scrollTop; draw(); $('#sheet').scrollTop = sc; return; }
       const g = e.target.closest('[data-gk]');
       if (g){ const n = Number(g.dataset.gk); gk = gk === n ? null : n; const sc = $('#sheet').scrollTop; draw(); $('#sheet').scrollTop = sc; return; }
       if (e.target.closest('#lu-skip')){ closeSheet(); onDone && onDone(false); }
       if (e.target.closest('#lu-ok')){
+        if (sel.size > max){ toast(`Te veel spelers: maximum ${max}`); return; }   // bv. na verlagen van het aantal
         const players = [...sel].sort((a, b) => a - b).map(n => plabel(n, (S().players[n] || '').trim()));
         if (start) st.events = st.events.filter(x => !(x.type === 'lineup' && x.start && x.period === period));
         const keeper = gk ? plabel(gk, (S().players[gk] || '').trim()) : null;
