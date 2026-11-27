@@ -1278,7 +1278,18 @@ else {
   render();
   if (st.live){ setPub('busy'); publish(); }
 }
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
+/* Updates: bij elke terugkeer naar de app nakijken of er een nieuwe versie is; zo ja, herladen
+   (alles staat in localStorage, er gaat niets verloren). Niet midden in een open venster. */
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js', {updateViaCache:'none'}).then(reg => {
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+  }).catch(() => {});
+  let pendingReload = false;
+  const tryReload = () => { if (pendingReload && !$('#sheet').classList.contains('on')) location.reload(); };
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!hadController) return; pendingReload = true; tryReload(); });
+  setInterval(tryReload, 2000);
+}
 </script>
 </body>
 </html>
