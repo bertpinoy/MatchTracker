@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<title>Handleiding – KWSC Lauwe Match Tracker</title>
+<link rel="icon" href="logo.png" type="image/png">
+<style>
+  :root{--bg:#0a0a0a;--card:#161616;--line:#2e2e2e;--text:#f6f6f6;--muted:#a6a6a6;--accent:#ffd400;--safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px)}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:560px;margin:0 auto;padding:calc(12px + var(--safe-t)) 16px calc(32px + var(--safe-b))}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+  .back{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);text-decoration:none;font-weight:700}
+  .brand{display:flex;align-items:center;gap:12px;margin:14px 0 18px}
+  .brand img{width:52px;height:52px}
+  .brand span{display:block;color:var(--accent);font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.12em}
+  .brand b{font-size:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
+  h2{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:17px}
+  h2 .n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#111;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center}
+  p{margin:6px 0} ul{margin:6px 0;padding-left:20px} li{margin:4px 0}
+  .muted{color:var(--muted)}
+  .ico{width:19px;height:19px;color:#b4b4b4;vertical-align:-4px;margin:0 2px}
+  b.k{color:var(--accent)}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .toc a{padding:6px 11px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--text);text-decoration:none;font-size:14px;font-weight:600}
+  .tip{border-left:3px solid var(--accent);padding:2px 0 2px 12px;margin:10px 0;color:var(--muted)}
+</style>
+</head>
+<body>
+<!-- iconen: kopie van de symbolen in index.html -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-goal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M12 7.6l3.8 2.8-1.45 4.5h-4.7L8.2 10.4z" fill="currentColor"/><path d="M12 7.6V3.2M15.8 10.4l4.6-1.4M14.35 14.9l2.8 3.9M9.65 14.9l-2.8 3.9M8.2 10.4 3.6 9"/></g></symbol>
+    <symbol id="i-pen_goal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.5 11V4.5h13V11"/><circle cx="9" cy="17" r="4"/><circle cx="9" cy="17" r="1.3" fill="currentColor"/><path d="M16.5 15.5l2 2 3.5-4"/></g></symbol>
+    <symbol id="i-own_goal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 20V5h18v15"/><path d="M15.5 18v-5a3.5 3.5 0 0 0-7 0v1"/><path d="M6 12.5l2.5 2.5 2.5-2.5"/></g></symbol>
+    <symbol id="i-pen_miss" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.5 11V4.5h13V11"/><circle cx="9" cy="17" r="4"/><circle cx="9" cy="17" r="1.3" fill="currentColor"/><path d="M17 14l4 4M21 14l-4 4"/></g></symbol>
+    <symbol id="i-shot" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="15.5" cy="12" r="5.5"/><circle cx="15.5" cy="12" r="1.6" fill="currentColor"/><path d="M2.5 9h5M4 12h4.5M2.5 15h5"/></g></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 21v-3.5L5 13.8a1.7 1.7 0 0 1 2.6-2.2L9 13V5.5a1.5 1.5 0 0 1 3 0V11V4a1.5 1.5 0 0 1 3 0v7V5.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-3 5.2V21z"/></g></symbol>
+    <symbol id="i-corner" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 21h18M3 21V3.5"/><path d="M3 3.5l9 3.2-9 3.3"/><path d="M3 15a6 6 0 0 1 6 6"/></g></symbol>
+    <symbol id="i-freekick" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="5.5" cy="18.5" r="2.8"/><circle cx="5.5" cy="18.5" r=".9" fill="currentColor"/><path d="M8.5 16C11 9 16 5.5 20.5 7" stroke-dasharray="2 2.6"/><path d="M17.5 4.8 20.5 7l-2.4 2.8"/></g></symbol>
+    <symbol id="i-offside" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 21.5V3"/><path d="M6 3.5h12v8H6"/><path d="M6 3.5l12 8"/><path d="M14 15v6.5" stroke-dasharray="1.6 2.4"/></g></symbol>
+    <symbol id="i-yellow" viewBox="0 0 24 24"><g fill="rgba(217,178,0,.85)" stroke="#d9b200" stroke-width="1.8" stroke-linejoin="round">
+      <rect x="7" y="3.5" width="10" height="15" rx="1.6" transform="rotate(10 12 11)"/></g></symbol>
+    <symbol id="i-red" viewBox="0 0 24 24"><g fill="rgba(201,64,60,.85)" stroke="#c9403c" stroke-width="1.8" stroke-linejoin="round">
+      <rect x="7" y="3.5" width="10" height="15" rx="1.6" transform="rotate(10 12 11)"/></g></symbol>
+    <symbol id="i-sub" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 4v15M4.5 15.5 8 19l3.5-3.5"/><path d="M16 20V5M12.5 8.5 16 5l3.5 3.5"/></g></symbol>
+    <symbol id="i-injury" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></g></symbol>
+    <symbol id="i-chance" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></g></symbol>
+    <symbol id="i-highlight" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></g></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 3h8.5L19 7.5V21H6z"/><path d="M14.5 3v4.5H19"/><path d="M9 12h7M9 16h5"/></g></symbol>
+    <!-- overige symbolen (zelfde stijl) -->
+    <symbol id="s-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="s-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="s-next" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5.5v13l9-6.5z"/><path d="M18.5 5v14"/></g></symbol>
+    <symbol id="s-finish" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V3.5" fill="none"/><path d="M5 4h14v9H5" fill="none"/><path d="M5 4h4.7v4.5H5zM14.3 4H19v4.5h-4.7zM9.7 8.5h4.6V13H9.7z" fill="currentColor" stroke-width="0"/></g></symbol>
+    <symbol id="s-lineup" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5h6v3H9z"/><path d="M7.5 5H5.5v16h13V5h-2"/><circle cx="9" cy="11.5" r="1.2" fill="currentColor"/><circle cx="15" cy="11.5" r="1.2" fill="currentColor"/><circle cx="12" cy="16.5" r="1.2" fill="currentColor"/></g></symbol>
+    <symbol id="s-keeper" viewBox="0 0 24 24"><path d="M8 21v-3.5L5 13.8a1.7 1.7 0 0 1 2.6-2.2L9 13V5.5a1.5 1.5 0 0 1 3 0V11V4a1.5 1.5 0 0 1 3 0v7V5.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-3 5.2V21z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="s-live" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M8.6 8.6a4.8 4.8 0 0 0 0 6.8M15.4 8.6a4.8 4.8 0 0 1 0 6.8M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"/></g></symbol>
+    <symbol id="s-more" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5.5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="18.5" cy="12" r="1.8"/></g></symbol>
+    <symbol id="s-settings" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/></g></symbol>
+    <symbol id="s-undo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></g></symbol>
+    <symbol id="s-report" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18H6z"/><path d="M9.5 17v-3M12 17v-7M14.5 17v-5"/></g></symbol>
+    <symbol id="s-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="s-share" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 11v8.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V11"/></g></symbol>
+    <symbol id="s-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></g></symbol>
+    <symbol id="s-chat" viewBox="0 0 24 24"><path d="M5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-4.5 4V5.5A1.5 1.5 0 0 1 5.5 4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="s-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></g></symbol>
+    <symbol id="s-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 10A7.5 7.5 0 0 0 6 6.5L4.5 8M4.5 14A7.5 7.5 0 0 0 18 17.5l1.5-1.5"/><path d="M4.5 3.5V8H9M19.5 20.5V16H15"/></g></symbol>
+    <symbol id="s-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+    <symbol id="s-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9.5H4z"/><path d="M10 20.5V15h4v5.5"/></g></symbol>
+    <symbol id="s-away" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="14" rx="2.5"/><path d="M4 10.5h16M8 17.5v2.5M16 17.5v2.5"/><circle cx="8" cy="14" r=".8" fill="currentColor"/><circle cx="16" cy="14" r=".8" fill="currentColor"/></g></symbol>
+    <symbol id="s-hourglass" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10M7 21h10"/><path d="M8 3v2.5a4 4 0 0 0 1.6 3.2L12 12l2.4-3.3A4 4 0 0 0 16 5.5V3M8 21v-2.5a4 4 0 0 1 1.6-3.2L12 12l2.4 3.3a4 4 0 0 1 1.6 3.2V21"/></g></symbol>
+    <symbol id="s-stopwatch" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.5h4M12 2.5V6M18.3 6.8l1.4-1.4"/></g></symbol>
+    <symbol id="s-bell" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></g></symbol>
+    <symbol id="s-trash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13.5h9l1-13.5"/><path d="M10 11v5.5M14 11v5.5"/></g></symbol>
+    <symbol id="s-shirt" viewBox="0 0 24 24"><path d="M9 3.5a3 3 0 0 0 6 0l5.5 3-2 4.2-2.5-1.2v11.5H8V9.5l-2.5 1.2-2-4.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="s-edit" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5z"/><path d="M13.5 7l3 3"/></g></symbol>
+    <symbol id="s-ok" viewBox="0 0 24 24"><g fill="none" stroke="#4caf6a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.7 2.7L16 9.5"/></g></symbol>
+    <symbol id="s-warn" viewBox="0 0 24 24"><g fill="none" stroke="#ff9f1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4.5M12 17.3v.2"/></g></symbol>
+    <symbol id="s-denied" viewBox="0 0 24 24"><g fill="none" stroke="#ff5a5f" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.7 5.7l12.6 12.6"/></g></symbol>
+    <symbol id="s-busy" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 1-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="s-help" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.9.7c0 1.7-2.4 2.2-2.4 3.8"/><circle cx="12" cy="17" r=".9" fill="currentColor"/></g></symbol>
+  </defs>
+</svg>
+<div class="wrap">
+  <div class="top"><a class="back" href="index.html"><svg class="ico" style="color:inherit"><use href="#s-undo"/></svg>Terug naar de app</a></div>
+  <div class="brand"><img src="logo.png" alt="KWSC Lauwe"><div><span>Handleiding</span><b>Match Tracker</b></div></div>
+
+  <nav class="toc">
+    <a href="#instellen">Instellen</a><a href="#aftrap">Aftrap</a><a href="#acties">Acties</a><a href="#wissels">Wissels &amp; kaarten</a>
+    <a href="#klok">Klok</a><a href="#live">Live delen</a><a href="#verslag">Verslag</a><a href="#tips">Tips</a>
+  </nav>
+
+  <div class="card" id="instellen">
+    <h2><span class="n">1</span>Wedstrijd instellen</h2>
+    <ul>
+      <li>Vul de <b>tegenstander</b> in, kies hun <b>kleur</b> en of jullie <b>thuis</b> of <b>uit</b> spelen.</li>
+      <li>Kies bij <b>Speelwijze</b> het aantal periodes, de minuten per periode en het aantal <b>spelers op het veld</b> (incl. keeper).</li>
+      <li>Tik bij <b>Onze spelers</b> op een rugnummer om een naam in te vullen. Dat hoeft maar één keer: de spelers worden onthouden.</li>
+      <li>Tik op <b>Naar de wedstrijd</b>.</li>
+    </ul>
+  </div>
+
+  <div class="card" id="aftrap">
+    <h2><span class="n">2</span>Opstelling en aftrap</h2>
+    <ul>
+      <li>Tik op <svg class="ico"><use href="#s-play"/></svg><b>Aftrap</b>. De app vraagt eerst wie begint: tik de spelers aan en kies onderaan de <svg class="ico"><use href="#s-keeper"/></svg><b>keeper</b>.</li>
+      <li>Tik daarna op <b>Opslaan &amp; aftrap</b> en de klok start.</li>
+      <li>Op het einde van elk kwart vraagt de app wie het volgende kwart start. De huidige spelers zijn al aangeduid.</li>
+      <li>De opstelling aanpassen kan altijd via <svg class="ico"><use href="#s-edit"/></svg><b>Wijzig</b> op de kaart <i>Op het veld</i>.</li>
+    </ul>
+  </div>
+
+  <div class="card" id="acties">
+    <h2><span class="n">3</span>Acties noteren</h2>
+    <ul>
+      <li>Kies bovenaan de <b>ploeg</b> (KWSC Lauwe of de tegenstander) en tik op een actie, bv. <svg class="ico"><use href="#i-goal"/></svg><b>Goal</b>.</li>
+      <li>Bij onze ploeg verschijnen de spelers: tik de <b>scorer</b> aan, daarna eventueel wie de <b>assist</b> gaf (of <i>Geen assist</i>).</li>
+      <li>Bij de tegenstander vul je optioneel een rugnummer in.</li>
+      <li><svg class="ico"><use href="#i-corner"/></svg>Hoekschop, <svg class="ico"><use href="#i-freekick"/></svg>vrije trap en <svg class="ico"><use href="#i-offside"/></svg>buitenspel worden meteen genoteerd. <svg class="ico"><use href="#i-save"/></svg>Een redding gaat meteen op naam van de keeper.</li>
+      <li>Vergist? Tik bovenaan op <svg class="ico"><use href="#s-undo"/></svg><b>Ongedaan</b>, of tik in de tijdlijn op een actie om ze te <b>bewerken</b> of te <b>verwijderen</b>.</li>
+    </ul>
+  </div>
+
+  <div class="card" id="wissels">
+    <h2><span class="n">4</span>Wissels en kaarten</h2>
+    <ul>
+      <li>Tik op <svg class="ico"><use href="#i-sub"/></svg><b>Wissel</b>: eerst wie erin komt (alleen spelers van de bank), dan wie eruit gaat. De kaart <i>Op het veld</i> wordt meteen bijgewerkt.</li>
+      <li>Gaat de keeper eruit, dan wordt de speler die erin komt de nieuwe keeper.</li>
+      <li>Een <svg class="ico"><use href="#i-red"/></svg><b>rode kaart</b> of een <b>tweede</b> <svg class="ico"><use href="#i-yellow"/></svg><b>gele kaart</b> haalt de speler van het veld. Die kan niet meer terugkomen.</li>
+    </ul>
+  </div>
+
+  <div class="card" id="klok">
+    <h2><span class="n">5</span>De klok</h2>
+    <ul>
+      <li><svg class="ico"><use href="#s-pause"/></svg><b>Pauze</b> zet de klok stil, <svg class="ico"><use href="#s-play"/></svg><b>Hervat</b> laat hem verder lopen.</li>
+      <li><b>Tik op de klok</b> om de tijd bij te stellen (±10 s, ±1 min of exact) of de speelwijze aan te passen.</li>
+      <li>Is de tijd om, dan piept en trilt de telefoon. Tik daarna op <svg class="ico"><use href="#s-next"/></svg><b>Einde K1</b>. Na het laatste kwart staat daar <svg class="ico"><use href="#s-finish"/></svg><b>Einde match</b>.</li>
+    </ul>
+  </div>
+
+  <div class="card" id="live">
+    <h2><span class="n">6</span>Live delen met andere ouders</h2>
+    <ul>
+      <li>Tik bovenaan op <svg class="ico"><use href="#s-live"/></svg> en daarna op <b>Start live delen</b>.</li>
+      <li>Met <svg class="ico"><use href="#s-share"/></svg><b>Link delen</b> stuur je de link bv. naar de WhatsApp-groep. Ouders hebben geen app of account nodig.</li>
+      <li>Ouders zien de score, de klok, wie op het veld staat en alle acties, live. Het getal op de <svg class="ico"><use href="#s-live"/></svg>-knop toont hoeveel <svg class="ico"><use href="#s-eye"/></svg>kijkers er zijn.</li>
+      <li>De knop is <b class="k">geel</b> als alles doorkomt en oranje als er even geen internet is: acties worden dan later doorgestuurd.</li>
+      <li>Een nieuwe wedstrijd starten stopt het delen. Na 7 dagen wordt de wedstrijd automatisch gewist.</li>
+    </ul>
+  </div>
+
+  <div class="card" id="verslag">
+    <h2><span class="n">7</span>Na de wedstrijd</h2>
+    <ul>
+      <li>Na <b>Einde match</b> verschijnt het verslag: eindstand, score per periode, statistieken, doelpunten en alle acties.</li>
+      <li><svg class="ico"><use href="#s-share"/></svg><b>PDF-verslag delen</b> of <svg class="ico"><use href="#s-download"/></svg><b>PDF downloaden</b>, of <svg class="ico"><use href="#s-chat"/></svg><b>Delen als tekst</b> voor WhatsApp.</li>
+      <li>Start een volgende match via <svg class="ico"><use href="#s-plus"/></svg><b>Nieuwe wedstrijd</b>. Deel eerst de PDF: de huidige wedstrijd wordt dan gewist.</li>
+    </ul>
+  </div>
+
+  <div class="card" id="tips">
+    <h2><span class="n">?</span>Tips</h2>
+    <ul>
+      <li><b>Zet de app op je beginscherm</b>: iPhone via <i>Deel → Zet op beginscherm</i>, Android via <i>⋮ → Toevoegen aan startscherm</i>.</li>
+      <li>De app werkt <b>zonder internet</b>; alleen live delen heeft verbinding nodig.</li>
+      <li>Telefoon vergrendeld of app per ongeluk gesloten? Niets gaat verloren en de klok loopt correct verder.</li>
+      <li>Het scherm blijft aan zolang de klok loopt.</li>
+      <li>Updates komen vanzelf binnen: de app herlaadt zichzelf de volgende keer dat je hem opent.</li>
+    </ul>
+    <p class="tip">Alles via het menu <svg class="ico"><use href="#s-more"/></svg>: teams en spelers aanpassen, laatste actie ongedaan maken, verslag, wedstrijd beëindigen en deze handleiding.</p>
+  </div>
+
+  <a class="back" href="index.html" style="width:100%;justify-content:center"><svg class="ico" style="color:inherit"><use href="#s-undo"/></svg>Terug naar de app</a>
+</div>
+</body>
+</html>

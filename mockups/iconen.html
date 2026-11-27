@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup – nieuwe iconen</title>
+<style>
+  :root{--bg:#0a0a0a;--card:#161616;--line:#2e2e2e;--text:#f6f6f6;--muted:#a6a6a6;--icon:#b4b4b4;--accent:#ffd400}
+  *{box-sizing:border-box}
+  body{margin:0;background:#050505;color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .page{max-width:1100px;margin:0 auto;padding:28px 18px 60px}
+  h1{font-size:22px;margin:0 0 4px} .lead{color:var(--muted);margin:0 0 26px}
+  h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+  .cols{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:375px;background:var(--bg);border:1px solid var(--line);border-radius:28px;padding:16px 14px}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+  .seg div{min-height:46px;border-radius:14px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--muted)}
+  .seg .on{border-color:var(--accent);color:var(--text);background:rgba(255,212,0,.12)}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px;border-radius:18px;background:#1a1806;border:1px solid #4a420c}
+  .ev{aspect-ratio:1/1;border-radius:14px;background:var(--bg);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+      font-size:11.5px;font-weight:700;color:var(--text)}
+  .ev.hl{background:#2a2508;border-color:#6b5c0f}
+  .ev svg{width:28px;height:28px;color:var(--icon)}
+  .tl{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px 12px}
+  .tl .r{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)} .tl .r:last-child{border:0}
+  .tl .tm{width:52px;font-size:13px;color:var(--muted)} .tl .tm b{display:block;color:var(--text);font-size:15px}
+  .tl svg{width:22px;height:22px;color:var(--icon);flex:none}
+  .tl .who{font-size:13px;font-weight:800} .tl .who i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:var(--accent)}
+  .sheet{flex:1;min-width:320px}
+  .big{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .big div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 8px;text-align:center;font-size:13px;color:var(--muted)}
+  .big svg{width:44px;height:44px;color:var(--icon);display:block;margin:0 auto 8px}
+  .variants{display:flex;gap:16px;margin-top:22px;flex-wrap:wrap}
+  .variant{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 18px;flex:1;min-width:250px}
+  .variant .row{display:flex;gap:22px;margin-top:10px}
+  .variant .row div{text-align:center;font-size:12px;color:var(--muted)}
+  .variant svg{width:40px;height:40px;color:var(--icon);display:block;margin:0 auto 6px}
+  .old{margin-top:22px;color:var(--muted);font-size:13px}
+  .old span{font-size:22px;margin-right:6px}
+</style>
+</head>
+<body>
+<!-- Iconen: 24x24, lijn 1.8, ronde uiteinden, allemaal currentColor (grijs) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="i-goal" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M12 7.6l3.8 2.8-1.45 4.5h-4.7L8.2 10.4z" fill="currentColor"/><path d="M12 7.6V3.2M15.8 10.4l4.6-1.4M14.35 14.9l2.8 3.9M9.65 14.9l-2.8 3.9M8.2 10.4 3.6 9"/>
+    </g>
+    <g id="i-pen_goal" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.5 11V4.5h13V11"/><circle cx="9" cy="17" r="4"/><circle cx="9" cy="17" r="1.3" fill="currentColor"/><path d="M16.5 15.5l2 2 3.5-4"/>
+    </g>
+    <g id="i-own_goal" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 20V5h18v15"/><path d="M15.5 18v-5a3.5 3.5 0 0 0-7 0v1"/><path d="M6 12.5l2.5 2.5 2.5-2.5"/>
+    </g>
+    <g id="i-pen_miss" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.5 11V4.5h13V11"/><circle cx="9" cy="17" r="4"/><circle cx="9" cy="17" r="1.3" fill="currentColor"/><path d="M17 14l4 4M21 14l-4 4"/>
+    </g>
+    <g id="i-shot" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="15.5" cy="12" r="5.5"/><circle cx="15.5" cy="12" r="1.6" fill="currentColor"/><path d="M2.5 9h5M4 12h4.5M2.5 15h5"/>
+    </g>
+    <g id="i-save" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 21v-3.5L5 13.8a1.7 1.7 0 0 1 2.6-2.2L9 13V5.5a1.5 1.5 0 0 1 3 0V11V4a1.5 1.5 0 0 1 3 0v7V5.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-3 5.2V21z"/>
+    </g>
+    <g id="i-corner" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 21h18M3 21V3.5"/><path d="M3 3.5l9 3.2-9 3.3"/><path d="M3 15a6 6 0 0 1 6 6"/>
+    </g>
+    <g id="i-freekick" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="5.5" cy="18.5" r="2.8"/><circle cx="5.5" cy="18.5" r=".9" fill="currentColor"/><path d="M8.5 16C11 9 16 5.5 20.5 7" stroke-dasharray="2 2.6"/><path d="M17.5 4.8 20.5 7l-2.4 2.8"/>
+    </g>
+    <g id="i-offside" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 21.5V3"/><path d="M6 3.5h12v8H6"/><path d="M6 3.5l12 8"/><path d="M14 15v6.5" stroke-dasharray="1.6 2.4"/>
+    </g>
+    <g id="i-yellow" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="7" y="3.5" width="10" height="15" rx="1.6" transform="rotate(10 12 11)"/>
+    </g>
+    <g id="i-red" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="7" y="3.5" width="10" height="15" rx="1.6" transform="rotate(10 12 11)"/>
+    </g>
+    <g id="i-sub" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 4v15M4.5 15.5 8 19l3.5-3.5"/><path d="M16 20V5M12.5 8.5 16 5l3.5 3.5"/>
+    </g>
+    <g id="i-injury" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/>
+    </g>
+    <g id="i-chance" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/>
+    </g>
+    <g id="i-highlight" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/>
+    </g>
+    <g id="i-note" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 3h8.5L19 7.5V21H6z"/><path d="M14.5 3v4.5H19"/><path d="M9 12h7M9 16h5"/>
+    </g>
+  </defs>
+</svg>
+
+<div class="page">
+  <h1>Mockup – nieuwe iconen voor de acties</h1>
+  <p class="lead">Sobere lijniconen, allemaal in hetzelfde grijs. Links zoals het op je telefoon zou ogen, rechts groter om de details te beoordelen.</p>
+
+  <div class="cols">
+    <div>
+      <h2>Op de telefoon</h2>
+      <div class="phone">
+        <div class="seg"><div class="on">KWSC Lauwe</div><div>Zwevegem</div></div>
+        <div class="grid" id="grid"></div>
+        <div class="tl">
+          <div class="r"><div class="tm"><b>24'</b>K2 08:20</div><svg viewBox="0 0 24 24"><use href="#i-goal"/></svg><div><div class="who"><i></i>KWSC Lauwe · 2–1</div>Doelpunt – #7 Lucas (assist: #10 Emma)</div></div>
+          <div class="r"><div class="tm"><b>22'</b>K2 06:10</div><svg viewBox="0 0 24 24"><use href="#i-save"/></svg><div><div class="who"><i></i>KWSC Lauwe</div>Redding – #1 Noah</div></div>
+          <div class="r"><div class="tm"><b>19'</b>K2 03:20</div><svg viewBox="0 0 24 24"><use href="#i-sub"/></svg><div><div class="who"><i></i>KWSC Lauwe</div>Wissel – erin: #3 Lars, eruit: #9 Mats</div></div>
+          <div class="r"><div class="tm"><b>12'</b>K1 11:40</div><svg viewBox="0 0 24 24"><use href="#i-yellow"/></svg><div><div class="who"><i style="background:#9ca3af"></i>Zwevegem</div>Gele kaart – #8</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <h2>Alle iconen (groot)</h2>
+      <div class="big" id="big"></div>
+
+      <div class="variants">
+        <div class="variant">
+          <h2>Kaarten – variant A (volledig grijs)</h2>
+          <div class="muted" style="font-size:13px;color:var(--muted)">Geel = omlijnde kaart, rood = gevulde kaart.</div>
+          <div class="row">
+            <div><svg viewBox="0 0 24 24"><use href="#i-yellow"/></svg>Geel</div>
+            <div><svg viewBox="0 0 24 24"><use href="#i-red"/></svg>Rood</div>
+          </div>
+        </div>
+        <div class="variant">
+          <h2>Kaarten – variant B (enige uitzondering in kleur)</h2>
+          <div class="muted" style="font-size:13px;color:var(--muted)">Alleen de kaarten in hun echte kleur, gedempt.</div>
+          <div class="row">
+            <div><svg viewBox="0 0 24 24" style="color:#d9b200"><g fill="rgba(217,178,0,.85)" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="7" y="3.5" width="10" height="15" rx="1.6" transform="rotate(10 12 11)"/></g></svg>Geel</div>
+            <div><svg viewBox="0 0 24 24" style="color:#c9403c"><g fill="rgba(201,64,60,.85)" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="7" y="3.5" width="10" height="15" rx="1.6" transform="rotate(10 12 11)"/></g></svg>Rood</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="old"><b>Huidige emoji ter vergelijking:</b><br>
+        <span>⚽</span><span>🎯</span><span>🙈</span><span>❌</span><span>🥅</span><span>🧤</span><span>🚩</span><span>🦶</span><span>🚫</span><span>🟨</span><span>🟥</span><span>🔁</span><span>🩹</span><span>💥</span><span>⭐</span><span>📝</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const EV = [['goal','Goal',1],['pen_goal','Penalty ✓',1],['own_goal','Eigen goal'],['pen_miss','Penalty ✗'],['shot','Schot'],['save','Redding'],['corner','Hoekschop'],['freekick','Vrije trap'],
+    ['offside','Buitenspel'],['yellow','Geel'],['red','Rood'],['sub','Wissel'],['injury','Blessure'],['chance','Kans'],['highlight','Mooie actie'],['note','Notitie']];
+  const icon = k => `<svg viewBox="0 0 24 24"><use href="#i-${k}"/></svg>`;
+  document.getElementById('grid').innerHTML = EV.map(([k, l, hl]) => `<div class="ev ${hl ? 'hl' : ''}">${icon(k)}${l}</div>`).join('');
+  const NAMES = {goal:'Doelpunt',pen_goal:'Strafschop raak',own_goal:'Eigen doelpunt',pen_miss:'Strafschop gemist',shot:'Schot op doel',save:'Redding',corner:'Hoekschop',freekick:'Vrije trap',
+    offside:'Buitenspel',yellow:'Gele kaart',red:'Rode kaart',sub:'Wissel',injury:'Blessure',chance:'Grote kans',highlight:'Mooie actie',note:'Notitie'};
+  document.getElementById('big').innerHTML = EV.map(([k]) => `<div>${icon(k)}${NAMES[k]}</div>`).join('');
+</script>
+</body>
+</html>

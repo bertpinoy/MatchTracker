@@ -290,13 +290,15 @@
     <symbol id="s-warn" viewBox="0 0 24 24"><g fill="none" stroke="#ff9f1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4.5M12 17.3v.2"/></g></symbol>
     <symbol id="s-denied" viewBox="0 0 24 24"><g fill="none" stroke="#ff5a5f" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.7 5.7l12.6 12.6"/></g></symbol>
     <symbol id="s-busy" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 1-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="s-help" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.9.7c0 1.7-2.4 2.2-2.4 3.8"/><circle cx="12" cy="17" r=".9" fill="currentColor"/></g></symbol>
   </defs>
 </svg>
 <div class="wrap">
 
   <!-- ================= INSTELLEN ================= -->
   <section id="v-setup" class="view">
-    <div class="brand"><img src="logo.png" alt="KWSC Lauwe"><div><span>KWSC Lauwe</span><b>Match Tracker</b></div></div>
+    <div class="brand"><img src="logo.png" alt="KWSC Lauwe"><div style="flex:1"><span>KWSC Lauwe</span><b>Match Tracker</b></div>
+      <a class="iconbtn" href="handleiding.html" aria-label="Handleiding" title="Handleiding"><svg class="ico" aria-hidden="true"><use href="#s-help"/></svg></a></div>
 
     <div class="card">
       <h2>Wedstrijd</h2>
@@ -1113,6 +1115,7 @@ function openMenu(){
     <button data-m="summary"><span class="e">${sym('report')}</span>Verslag & PDF</button>
     ${st.status !== 'finished' ? `<button data-m="finish"><span class="e">${sym('finish')}</span>Wedstrijd nu beëindigen</button>` : ''}
     <button data-m="new"><span class="e">${sym('plus')}</span>Nieuwe wedstrijd</button>
+    <button data-m="help"><span class="e">${sym('help')}</span>Handleiding</button>
   </div>`);
   $('#sheetBody').onclick = e => {
     const b = e.target.closest('[data-m]'); if (!b) return; const m = b.dataset.m; closeSheet();
@@ -1122,6 +1125,7 @@ function openMenu(){
     if (m === 'live') setTimeout(openLiveSheet, 280);
     if (m === 'finish' && confirm('De wedstrijd nu beëindigen?')) finish();
     if (m === 'new') newMatchFlow();
+    if (m === 'help') location.href = 'handleiding.html';   // wedstrijd staat bewaard, klok loopt correct door
   };
 }
 async function newMatchFlow(){

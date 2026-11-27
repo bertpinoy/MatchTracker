@@ -4,6 +4,8 @@ Een mobiele web-app om een jeugdvoetbalwedstrijd van KWSC Lauwe bij te houden va
 
 **Live:** <https://bertpinoy.github.io/MatchTracker/>
 
+Een korte gebruikershandleiding staat in de app zelf (het **?**-icoon) en op <https://bertpinoy.github.io/MatchTracker/handleiding.html>.
+
 Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ → Toevoegen aan startscherm* (Android) installeren. Daarna werkt de app als een gewone app, ook zonder internet op het veld.
 
 ---
@@ -13,6 +15,9 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 | Bestand | Wat het is |
 |---|---|
 | `index.html` | De volledige app: HTML, CSS en JavaScript in één bestand, zonder externe bibliotheken of build-stap. |
+| `handleiding.html` | Korte handleiding voor gebruikers, te openen via het **?**-icoon op het instellingenscherm en via *Menu → Handleiding*. Ook offline beschikbaar. |
+| `mockups/iconen.html` | Ontwerp-mockup van de actie-iconen (variant A/B voor de kaarten). Niet gebruikt door de app. |
+| `mockups/symbolen.html` | Ontwerp-mockup van de overige symbolen (knoppen, menu, live delen). Niet gebruikt door de app. |
 | `sw.js` | Service worker: bewaart de app offline en zorgt dat nieuwe versies meteen binnenkomen. |
 | `manifest.webmanifest` | Web-app-manifest (naam, icoon, kleuren) zodat de app op het beginscherm geïnstalleerd kan worden. |
 | `logo.png` | Clublogo van KWSC Lauwe (app-icoon, kop van de app en van het PDF-verslag). |
@@ -92,6 +97,8 @@ Het PDF-verslag wordt in de browser zelf gemaakt door een kleine ingebouwde PDF-
 ### Iconen
 Alle iconen zijn inline SVG-symbolen bovenaan `<body>` in `index.html`: `i-…` voor de acties, `s-…` voor de overige symbolen. Gebruik in de code via `ico('goal')` en `sym('live')`.
 
+`handleiding.html` bevat een **kopie** van dezelfde symbolen. Pas je een icoon aan in `index.html`, kopieer dan het `<svg … aria-hidden="true">`-blok ook naar de handleiding. De ontwerpen staan in `mockups/` (open ze lokaal in de browser).
+
 ---
 
 ## Structuur van `index.html`
@@ -123,7 +130,9 @@ en open <http://localhost:5173>.
 
 **Publiceren:** de site draait op GitHub Pages vanaf de `main`-branch (root). Elke push naar `main` staat binnen ongeveer een minuut online.
 
-**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v18` → `v19`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
+**Bij een nieuwe functie:** werk ook `handleiding.html` bij als het gebruik verandert.
+
+**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v19` → `v20`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
 
 **Firebase-regels wijzigen:** pas `database.rules.json` aan en plak de inhoud in de Firebase-console (*Realtime Database → Regels → Publiceren*). De repo publiceert de regels niet automatisch.
 

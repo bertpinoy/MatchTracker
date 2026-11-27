@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup – overige symbolen</title>
+<style>
+  :root{--bg:#0a0a0a;--card:#161616;--card2:#222;--line:#2e2e2e;--text:#f6f6f6;--muted:#a6a6a6;--icon:#b4b4b4;--accent:#ffd400}
+  *{box-sizing:border-box}
+  body{margin:0;background:#050505;color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .page{max-width:1180px;margin:0 auto;padding:28px 18px 60px}
+  h1{font-size:22px;margin:0 0 4px} .lead{color:var(--muted);margin:0 0 26px;max-width:760px}
+  h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+  .cols{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+  .ico{width:20px;height:20px;flex:none;color:var(--icon);vertical-align:-4px}
+  /* telefoon */
+  .phone{width:375px;background:var(--bg);border:1px solid var(--line);border-radius:28px;padding:16px 14px}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .pill{padding:6px 12px;border-radius:999px;border:1px solid var(--accent);color:var(--accent);font-weight:700;font-size:14px}
+  .ib{width:44px;height:44px;border-radius:12px;background:var(--card);border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;position:relative}
+  .ib.on{border-color:var(--accent);background:rgba(255,212,0,.15)}
+  .ib .ico{width:22px;height:22px}
+  .badge{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;border-radius:10px;background:var(--accent);color:#111;font-size:11.5px;font-weight:900;display:flex;align-items:center;justify-content:center}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 14px;border-radius:14px;background:var(--card2);border:1px solid var(--line);font-weight:700}
+  .btn.primary{background:var(--accent);color:#111;border-color:transparent}
+  .btn.primary .ico{color:#111}
+  .btn.danger{background:transparent;color:#ff5a5f;border-color:#5a2a2c} .btn.danger .ico{color:#ff5a5f}
+  .row{display:flex;gap:10px} .row>*{flex:1}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:12px}
+  .card h3{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+  .chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-weight:700;font-size:14px}
+  .fchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .fchip{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:10px;background:rgba(255,212,0,.12);border:1px solid rgba(255,212,0,.5);font-weight:700;font-size:14px}
+  .fchip b{color:var(--accent)} .fchip.gk{background:rgba(46,158,79,.18);border-color:#2e9e4f}
+  .fchip .ico{width:16px;height:16px}
+  .sys{display:flex;justify-content:center;margin:6px 0}
+  .sys span{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700;color:var(--muted)}
+  .sys .ico{width:15px;height:15px}
+  .menu div{display:flex;align-items:center;gap:12px;min-height:50px;border-bottom:1px solid var(--line);font-weight:700} .menu div:last-child{border:0}
+  .seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px;margin-top:8px}
+  .seg div{flex:1;min-height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:700;color:var(--muted)}
+  .seg .on{background:var(--accent);color:#111} .seg .on .ico{color:#111}
+  .state{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);margin:6px 0}
+  /* overzicht */
+  .sheet{flex:1;min-width:360px}
+  .group{margin-bottom:22px}
+  .tbl{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .it{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 10px;display:flex;align-items:center;gap:10px}
+  .it .old{font-size:20px;width:26px;text-align:center;opacity:.8}
+  .it .arrow{color:#555}
+  .it .ico{width:30px;height:30px}
+  .it .lbl{font-size:12.5px;color:var(--muted);line-height:1.25}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- zelfde stijl als de actie-iconen: 24x24, lijn 1.8, ronde uiteinden -->
+  <symbol id="s-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="s-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="s-next" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5.5v13l9-6.5z"/><path d="M18.5 5v14"/></g></symbol>
+  <symbol id="s-finish" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V3.5" fill="none"/><path d="M5 4h14v9H5" fill="none"/><path d="M5 4h4.7v4.5H5zM14.3 4H19v4.5h-4.7zM9.7 8.5h4.6V13H9.7z" fill="currentColor" stroke-width="0"/></g></symbol>
+  <symbol id="s-lineup" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5h6v3H9z"/><path d="M7.5 5H5.5v16h13V5h-2"/><circle cx="9" cy="11.5" r="1.2" fill="currentColor"/><circle cx="15" cy="11.5" r="1.2" fill="currentColor"/><circle cx="12" cy="16.5" r="1.2" fill="currentColor"/></g></symbol>
+  <symbol id="s-keeper" viewBox="0 0 24 24"><path d="M8 21v-3.5L5 13.8a1.7 1.7 0 0 1 2.6-2.2L9 13V5.5a1.5 1.5 0 0 1 3 0V11V4a1.5 1.5 0 0 1 3 0v7V5.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-3 5.2V21z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="s-live" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M8.6 8.6a4.8 4.8 0 0 0 0 6.8M15.4 8.6a4.8 4.8 0 0 1 0 6.8M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"/></g></symbol>
+  <symbol id="s-more" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5.5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="18.5" cy="12" r="1.8"/></g></symbol>
+  <symbol id="s-settings" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/></g></symbol>
+  <symbol id="s-undo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></g></symbol>
+  <symbol id="s-report" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18H6z"/><path d="M9.5 17v-3M12 17v-7M14.5 17v-5"/></g></symbol>
+  <symbol id="s-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="s-share" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 11v8.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V11"/></g></symbol>
+  <symbol id="s-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></g></symbol>
+  <symbol id="s-chat" viewBox="0 0 24 24"><path d="M5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-4.5 4V5.5A1.5 1.5 0 0 1 5.5 4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="s-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></g></symbol>
+  <symbol id="s-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 10A7.5 7.5 0 0 0 6 6.5L4.5 8M4.5 14A7.5 7.5 0 0 0 18 17.5l1.5-1.5"/><path d="M4.5 3.5V8H9M19.5 20.5V16H15"/></g></symbol>
+  <symbol id="s-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+  <symbol id="s-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9.5H4z"/><path d="M10 20.5V15h4v5.5"/></g></symbol>
+  <symbol id="s-away" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="14" rx="2.5"/><path d="M4 10.5h16M8 17.5v2.5M16 17.5v2.5"/><circle cx="8" cy="14" r=".8" fill="currentColor"/><circle cx="16" cy="14" r=".8" fill="currentColor"/></g></symbol>
+  <symbol id="s-hourglass" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10M7 21h10"/><path d="M8 3v2.5a4 4 0 0 0 1.6 3.2L12 12l2.4-3.3A4 4 0 0 0 16 5.5V3M8 21v-2.5a4 4 0 0 1 1.6-3.2L12 12l2.4 3.3a4 4 0 0 1 1.6 3.2V21"/></g></symbol>
+  <symbol id="s-stopwatch" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.5h4M12 2.5V6M18.3 6.8l1.4-1.4"/></g></symbol>
+  <symbol id="s-bell" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></g></symbol>
+  <symbol id="s-trash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13.5h9l1-13.5"/><path d="M10 11v5.5M14 11v5.5"/></g></symbol>
+  <symbol id="s-shirt" viewBox="0 0 24 24"><path d="M9 3.5a3 3 0 0 0 6 0l5.5 3-2 4.2-2.5-1.2v11.5H8V9.5l-2.5 1.2-2-4.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="s-edit" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5z"/><path d="M13.5 7l3 3"/></g></symbol>
+  <symbol id="s-ok" viewBox="0 0 24 24"><g fill="none" stroke="#4caf6a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.7 2.7L16 9.5"/></g></symbol>
+  <symbol id="s-warn" viewBox="0 0 24 24"><g fill="none" stroke="#ff9f1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4.5M12 17.3v.2"/></g></symbol>
+  <symbol id="s-denied" viewBox="0 0 24 24"><g fill="none" stroke="#ff5a5f" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.7 5.7l12.6 12.6"/></g></symbol>
+  <symbol id="s-busy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3a9 9 0 1 1-9 9" /></g></symbol>
+</defs></svg>
+
+<div class="page">
+  <h1>Mockup – overige symbolen</h1>
+  <p class="lead">Dezelfde stijl als de nieuwe actie-iconen: dunne grijze lijnen. Op gele knoppen worden ze zwart. Alleen de verbindingsstatus van het live delen houdt een kleur (groen / oranje / rood), omdat die kleur de boodschap is.</p>
+
+  <div class="cols">
+    <div>
+      <h2>Op de telefoon</h2>
+      <div class="phone">
+        <div class="top"><span class="pill">● 2e kwart</span>
+          <span style="display:flex;gap:8px"><span class="ib on"><svg class="ico"><use href="#s-live"/></svg><span class="badge">6</span></span><span class="ib"><svg class="ico"><use href="#s-more"/></svg></span></span></div>
+        <div class="row">
+          <div class="btn primary" style="flex:1.4"><svg class="ico"><use href="#s-pause"/></svg>Pauze</div>
+          <div class="btn"><svg class="ico"><use href="#s-next"/></svg>Einde K2</div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3>Op het veld (8)</h3><span class="chip"><svg class="ico" style="width:16px;height:16px"><use href="#s-edit"/></svg>Wijzig</span></div>
+          <div class="fchips">
+            <span class="fchip gk"><svg class="ico"><use href="#s-keeper"/></svg><b>1</b>Noah</span><span class="fchip"><b>3</b>Lars</span><span class="fchip"><b>4</b>Jules</span><span class="fchip"><b>5</b>Mila</span>
+            <span class="fchip"><b>7</b>Lucas</span><span class="fchip"><b>8</b>Finn</span><span class="fchip"><b>10</b>Emma</span><span class="fchip"><b>11</b>Lotte</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Tijdlijn</h3>
+          <div class="sys"><span><svg class="ico"><use href="#s-lineup"/></svg>Opstelling K2: 1, 3, 4, 5, 7, 8, 10, 11 · <svg class="ico"><use href="#s-keeper"/></svg>1</span></div>
+          <div class="sys"><span><svg class="ico"><use href="#s-play"/></svg>Start 2e kwart · 00:00</span></div>
+          <div class="sys"><span><svg class="ico"><use href="#s-pause"/></svg>Einde 1e kwart · 15:00</span></div>
+        </div>
+        <div class="card menu">
+          <h3 style="margin-bottom:4px">Menu</h3>
+          <div><svg class="ico"><use href="#s-settings"/></svg>Teams, spelers &amp; speelwijze</div>
+          <div><svg class="ico"><use href="#s-undo"/></svg>Laatste actie ongedaan maken</div>
+          <div><svg class="ico"><use href="#s-live"/></svg>Live link voor ouders</div>
+          <div><svg class="ico"><use href="#s-report"/></svg>Verslag &amp; PDF</div>
+          <div><svg class="ico"><use href="#s-finish"/></svg>Wedstrijd nu beëindigen</div>
+          <div><svg class="ico"><use href="#s-plus"/></svg>Nieuwe wedstrijd</div>
+        </div>
+        <div class="card">
+          <h3>Live link voor ouders</h3>
+          <div class="state"><svg class="ico"><use href="#s-ok"/></svg>Verbonden – ouders zien elke actie meteen</div>
+          <div class="state"><svg class="ico"><use href="#s-eye"/></svg>6 kijkers</div>
+          <div class="btn primary" style="margin-top:8px"><svg class="ico"><use href="#s-share"/></svg>Link delen</div>
+          <div class="row" style="margin-top:8px"><div class="btn"><svg class="ico"><use href="#s-copy"/></svg>Kopieer</div><div class="btn"><svg class="ico"><use href="#s-refresh"/></svg>Nieuwe link</div></div>
+        </div>
+        <div class="card">
+          <h3>Instellingen</h3>
+          <div class="seg"><div class="on"><svg class="ico"><use href="#s-home"/></svg>Thuis</div><div><svg class="ico"><use href="#s-away"/></svg>Uit</div></div>
+          <div class="seg"><div><svg class="ico"><use href="#s-hourglass"/></svg>Resterend</div><div class="on"><svg class="ico"><use href="#s-stopwatch"/></svg>Gespeeld</div></div>
+          <div class="btn danger" style="margin-top:8px"><svg class="ico"><use href="#s-trash"/></svg>Alle namen wissen</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet" id="sheet"></div>
+  </div>
+</div>
+
+<script>
+  const G = [
+    ['Wedstrijd & klok', [['▶','play','Aftrap / Hervat / Start periode'],['⏸','pause','Pauze / einde periode'],['⏭','next','Einde kwart'],['🏁','finish','Einde match'],
+      ['⏱','stopwatch','Klok / Gespeeld'],['⏳','hourglass','Resterend'],['⏰','bell','Tijd is om']]],
+    ['Opstelling & spelers', [['📋','lineup','Opstelling'],['🧤','keeper','Keeper'],['👕','shirt','Rugnummer'],['✏️','edit','Wijzig']]],
+    ['Menu & verslag', [['⋯','more','Menu'],['⚙️','settings','Instellingen'],['↩️','undo','Ongedaan maken'],['📄','report','Verslag & PDF'],['＋','plus','Nieuwe wedstrijd'],
+      ['🗑','trash','Wissen / verwijderen']]],
+    ['Delen', [['📤','share','PDF / link delen'],['⬇','download','PDF downloaden'],['💬','chat','Delen als tekst'],['📋','copy','Kopieer link']]],
+    ['Live voor ouders', [['📡','live','Live delen'],['🔄','refresh','Nieuwe link'],['👀','eye','Kijkers'],['✅','ok','Verbonden'],['⚠️','warn','Geen verbinding'],['⛔','denied','Geweigerd'],['⏳','busy','Verbinden…']]],
+    ['Instellingen', [['🏠','home','Thuis'],['🚌','away','Uit']]],
+  ];
+  document.getElementById('sheet').innerHTML = G.map(([t, items]) => `<div class="group"><h2>${t}</h2><div class="tbl">${items.map(([o, k, l]) =>
+    `<div class="it"><span class="old">${o}</span><span class="arrow">→</span><svg class="ico"><use href="#s-${k}"/></svg><span class="lbl">${l}</span></div>`).join('')}</div></div>`).join('');
+</script>
+</body>
+</html>
