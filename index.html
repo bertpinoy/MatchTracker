@@ -1087,7 +1087,11 @@ const LIVE = {
 };
 const liveReady = () => !!(LIVE.apiKey && LIVE.dbUrl);
 const AUTH_KEY = 'kwsc.auth';
-async function getToken(){
+/* Eén token-aanvraag tegelijk: twee gelijktijdige aanmeldingen gaven twee verschillende
+   anonieme accounts, waarna de bewaarde account de wedstrijd niet meer mocht bijwerken. */
+let tokenP = null;
+function getToken(){ if (!tokenP) tokenP = fetchToken().finally(() => { tokenP = null; }); return tokenP; }
+async function fetchToken(){
   let a = null; try { a = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch {}
   if (a && a.exp > Date.now() + 60000) return a;
   if (a && a.refresh){
@@ -1103,15 +1107,18 @@ async function getToken(){
   }
   localStorage.setItem(AUTH_KEY, JSON.stringify(a)); return a;
 }
-let pubTimer, pubState = 'off';
+let pubTimer, pubState = 'off', publishing = false, publishAgain = false;
 function setPub(x){
   pubState = x;
-  const b = $('#l-live'); b.classList.toggle('on', !!st.live && x !== 'err'); b.classList.toggle('err', !!st.live && x === 'err');
+  const bad = x === 'err' || x === 'denied';
+  const b = $('#l-live'); b.classList.toggle('on', !!st.live && !bad); b.classList.toggle('err', !!st.live && bad);
   const s = $('#lv-state'); if (s) s.innerHTML = liveStateHtml();
 }
 function schedulePublish(){ if (!st.live || VIEWER || !liveReady()) return; clearTimeout(pubTimer); pubTimer = setTimeout(publish, 500); }
 async function publish(){
   if (!st.live || !liveReady()) return;
+  if (publishing){ publishAgain = true; return; }       // nooit twee keer tegelijk schrijven
+  publishing = true;
   try {
     setPub('busy');
     const a = await getToken(), s = S();
@@ -1119,17 +1126,22 @@ async function publish(){
       setup:{team:s.team, opponent:s.opponent, weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, countDown:s.countDown},
       events:st.events};
     const r = await fetch(`${LIVE.dbUrl}/matches/${st.live}.json?auth=${encodeURIComponent(a.id)}`, {method:'PUT', body:JSON.stringify(body)});
+    if (r.status === 401 || r.status === 403){ setPub('denied'); return; }   // link is van een ander account
     if (!r.ok) throw new Error('db ' + r.status);
     setPub('ok');
   } catch (e) {
     console.warn('Live publiceren mislukt', e); setPub('err');
     clearTimeout(pubTimer); pubTimer = setTimeout(publish, 15000);     // later opnieuw proberen
+  } finally {
+    publishing = false;
+    if (publishAgain){ publishAgain = false; publish(); }
   }
 }
 window.addEventListener('online', schedulePublish);
 const liveUrl = () => `${location.origin}${location.pathname}?volg=${st.live}`;
 const liveStateHtml = () => pubState === 'ok' ? '✅ Verbonden – ouders zien elke actie meteen'
   : pubState === 'err' ? '⚠️ Geen verbinding – nieuwe acties worden doorgestuurd zodra er weer internet is'
+  : pubState === 'denied' ? '⛔ Deze link kan niet meer bijgewerkt worden. Tik op "Nieuwe link" en deel die opnieuw.'
   : '⏳ Verbinden…';
 function openLiveSheet(){
   if (!liveReady()){
@@ -1144,7 +1156,7 @@ function openLiveSheet(){
       Wie de link heeft, ziet de namen van de spelers die je bij acties kiest.</div>
       <button class="btn primary big block" id="lv-start">📡 Start live delen</button>`);
     $('#sheetBody').onclick = e => {
-      if (e.target.closest('#lv-start')){ st.live = uid() + uid(); save(); publish(); openLiveSheet(); renderLive(); }
+      if (e.target.closest('#lv-start')){ st.live = uid() + uid(); setPub('busy'); save(); openLiveSheet(); renderLive(); }
     };
     return;
   }
@@ -1154,8 +1166,9 @@ function openLiveSheet(){
     <button class="btn primary big block" id="lv-share">📤 Link delen</button>
     <div class="row" style="margin-top:10px">
       <button class="btn grow" id="lv-copy">📋 Kopieer</button>
-      <button class="btn danger grow" id="lv-stop">Stop live</button>
-    </div>`);
+      <button class="btn grow" id="lv-new">🔄 Nieuwe link</button>
+    </div>
+    <button class="btn danger block" id="lv-stop" style="margin-top:10px">Stop live delen</button>`);
   $('#sheetBody').onclick = async e => {
     const [h, a] = order();
     if (e.target.closest('#lv-share')){
@@ -1164,6 +1177,9 @@ function openLiveSheet(){
       else navigator.clipboard.writeText(liveUrl()).then(() => toast('Link gekopieerd'));
     }
     if (e.target.closest('#lv-copy')) navigator.clipboard.writeText(liveUrl()).then(() => toast('Link gekopieerd'), () => toast('Kopiëren mislukt'));
+    if (e.target.closest('#lv-new') && confirm('Een nieuwe link maken? De oude link wordt dan niet meer bijgewerkt; deel de nieuwe link opnieuw.')){
+      st.live = uid() + uid(); setPub('busy'); save(); openLiveSheet(); return;
+    }
     if (e.target.closest('#lv-stop') && confirm('Live delen stoppen? Ouders zien dan geen nieuwe acties meer.')){
       st.live = null; clearTimeout(pubTimer); save(); setPub('off'); closeSheet(); renderLive();
     }
