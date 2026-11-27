@@ -6,6 +6,16 @@
         ".write": "auth != null && (!data.exists() || data.child('uid').val() === auth.uid)",
         ".validate": "newData.child('uid').val() === auth.uid"
       }
+    },
+    "viewers": {
+      "$id": {
+        ".read": true,
+        ".write": "auth != null && root.child('matches').child($id).child('uid').val() === auth.uid",
+        "$viewer": {
+          ".write": "$viewer.length <= 24 && root.child('matches').child($id).exists()",
+          ".validate": "newData.isNumber() && newData.val() <= now + 5000"
+        }
+      }
     }
   }
 }

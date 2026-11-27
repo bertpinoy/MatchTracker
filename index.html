@@ -183,6 +183,9 @@
          transform:translateY(calc(-100% - 30px - var(--safe-t)));transition:transform .25s;box-shadow:0 8px 30px rgba(0,0,0,.5)}
   .toast.on{transform:none}
   .livebtn.on{border-color:var(--accent);background:rgba(255,212,0,.15)}
+  .livebtn{position:relative}
+  .livebtn[data-count]:not([data-count=""])::after{content:attr(data-count);position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 5px;
+     border-radius:10px;background:var(--accent);color:#111;font-size:11.5px;font-weight:900;display:flex;align-items:center;justify-content:center}
   .livebtn.err{border-color:var(--warn);background:rgba(255,159,26,.15)}
   .linkbox{background:var(--bg);border:1px dashed var(--accent);border-radius:12px;padding:12px;font-size:13.5px;word-break:break-all;margin:6px 0 12px}
   .toast span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1273,7 +1276,7 @@ function setPub(x){
 }
 function liveBody(uidv, ended){
   const s = S();
-  return {uid:uidv, updated:Date.now(), date:st.date, status:st.status, period:st.period,
+  return {uid:uidv, updated:Date.now(), srv:{'.sv':'timestamp'}, date:st.date, status:st.status, period:st.period,
     acc: ended ? elapsed() : st.acc, runStart: ended ? null : st.runStart, liveEnded: !!ended,
     setup:{team:s.team, opponent:s.opponent, oppColor:oppColor(), weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, countDown:s.countDown},
     events:st.events};
@@ -1282,7 +1285,7 @@ function liveBody(uidv, ended){
 async function endLive(){
   if (!st.live || !liveReady()) { st.live = null; return; }
   const id = st.live;
-  clearTimeout(pubTimer); st.live = null; save(); setPub('off');
+  clearTimeout(pubTimer); st.live = null; save(); setPub('off'); viewerCount = null; showViewerCount();
   try {
     const a = await getToken();
     await fetch(`${LIVE.dbUrl}/matches/${id}.json?auth=${encodeURIComponent(a.id)}`, {method:'PUT', body:JSON.stringify(liveBody(a.uid, true))});
@@ -1299,7 +1302,8 @@ async function publish(){
     const r = await fetch(`${LIVE.dbUrl}/matches/${st.live}.json?auth=${encodeURIComponent(a.id)}`, {method:'PUT', body:JSON.stringify(liveBody(a.uid))});
     if (r.status === 401 || r.status === 403){ setPub('denied'); return; }   // link is van een ander account
     if (!r.ok) throw new Error('db ' + r.status);
-    setPub('ok');
+    try { const j = await r.json(); if (typeof j.srv === 'number') srvOffset = j.srv - Date.now(); } catch {}
+    setPub('ok'); pollViewers();
   } catch (e) {
     console.warn('Live publiceren mislukt', e); setPub('err');
     clearTimeout(pubTimer); pubTimer = setTimeout(publish, 15000);     // later opnieuw proberen
@@ -1330,6 +1334,7 @@ async function cleanupOldMatches(){
   try {
     const a = await getToken();
     for (const x of old){
+      await fetch(`${LIVE.dbUrl}/viewers/${x.id}.json?auth=${encodeURIComponent(a.id)}`, {method:'DELETE'}).catch(() => {});   // kijkers eerst (regel kijkt naar de wedstrijd)
       const r = await fetch(`${LIVE.dbUrl}/matches/${x.id}.json?auth=${encodeURIComponent(a.id)}`, {method:'DELETE'});
       // 200 = gewist (of bestond al niet meer); 401 = van een ander/verloren account, kunnen we niet wissen
       if (r.ok || r.status === 401 || r.status === 403) done.push(x.id);
@@ -1337,6 +1342,42 @@ async function cleanupOldMatches(){
   } catch (e) { console.warn('Opruimen mislukt', e); }
   if (done.length) localStorage.setItem(PUB_KEY, JSON.stringify(loadPublished().filter(x => !done.includes(x.id))));
 }
+
+/* ---------- kijkers tellen (anoniem) ----------
+   Elke ouder-telefoon krijgt een willekeurige code en schrijft elke 30 s enkel een (server)tijdstip
+   naar /viewers/<wedstrijd>/<code>. Wie de laatste 70 s een seintje gaf, telt als kijker. */
+const VIEW_WINDOW = 70000;
+let srvOffset = 0, viewerCount = null;
+const viewerText = n => n == null ? '' : n === 1 ? '👀 1 kijker' : `👀 ${n} kijkers`;
+const countRecent = (obj, nowSrv) => Object.values(obj || {}).filter(t => typeof t === 'number' && t > nowSrv - VIEW_WINDOW).length;
+function showViewerCount(){
+  const b = $('#l-live'); if (b) b.dataset.count = st.live && viewerCount ? viewerCount : '';
+  const s = $('#lv-viewers'); if (s) s.textContent = viewerText(viewerCount);
+}
+async function pollViewers(){            // coach
+  if (VIEWER || !st.live || !liveReady()) return;
+  try {
+    const r = await fetch(`${LIVE.dbUrl}/viewers/${st.live}.json`); if (!r.ok) return;
+    viewerCount = countRecent(await r.json(), Date.now() + srvOffset); showViewerCount();
+  } catch {}
+}
+setInterval(pollViewers, 30000);
+function myViewId(){ let v = localStorage.getItem('kwsc.viewerId'); if (!v){ v = uid() + uid(); localStorage.setItem('kwsc.viewerId', v); } return v; }
+const viewerUrl = () => `${LIVE.dbUrl}/viewers/${encodeURIComponent(VOLG)}/${myViewId()}.json`;
+async function viewerBeat(){             // ouder
+  if (!VIEWER || !liveReady() || document.visibilityState !== 'visible') return;
+  try {
+    const r = await fetch(viewerUrl(), {method:'PUT', body:JSON.stringify({'.sv':'timestamp'})});
+    if (!r.ok) return;                   // bv. regels nog niet bijgewerkt: dan gewoon geen teller
+    const now = await r.json();
+    const g = await fetch(`${LIVE.dbUrl}/viewers/${encodeURIComponent(VOLG)}.json`);
+    viewerCount = countRecent(await g.json(), typeof now === 'number' ? now : Date.now() + srvOffset);
+    $('#w-upd').textContent = wUpdText();
+  } catch {}
+}
+function leaveViewer(){ if (VIEWER && liveReady()) fetch(viewerUrl(), {method:'DELETE', keepalive:true}).catch(() => {}); }
+const wUpdText = () => [viewerText(viewerCount), lastUpdate ? 'Bijgewerkt ' + new Date(lastUpdate).toLocaleTimeString('nl-BE', {hour:'2-digit', minute:'2-digit'}) : '']
+  .filter(Boolean).join(' · ');
 
 const liveUrl = () => `${location.origin}${location.pathname}?volg=${st.live}`;
 const liveStateHtml = () => pubState === 'ok' ? '✅ Verbonden – ouders zien elke actie meteen'
@@ -1362,6 +1403,7 @@ function openLiveSheet(){
   }
   openSheet(`<h3>📡 Live link voor ouders</h3>
     <div class="sub" id="lv-state">${liveStateHtml()}</div>
+    <div class="sub" id="lv-viewers" style="margin-top:-6px">${viewerText(viewerCount)}</div>
     <div class="linkbox">${esc(liveUrl())}</div>
     <button class="btn primary big block" id="lv-share">📤 Link delen</button>
     <div class="row" style="margin-top:10px">
@@ -1405,7 +1447,7 @@ function renderWatch(){
   const ws = $('#w-status'); ws.textContent = ended ? 'Live gestopt' : watchConnected || lastUpdate ? txt : 'Verbinden…';
   ws.className = 'pill' + (st.status === 'running' && !ended ? ' live' : '');
   $('#w-sub').textContent = `${n} × ${S().periodMin} min`;
-  $('#w-upd').textContent = lastUpdate ? 'Bijgewerkt ' + new Date(lastUpdate).toLocaleTimeString('nl-BE', {hour:'2-digit', minute:'2-digit'}) : '';
+  $('#w-upd').textContent = wUpdText();
   $('#w-scorers').innerHTML = order().map(s => { const l = scorers(s);
     return `<div><div style="font-weight:800;color:${sideColor(s)};margin-bottom:4px">${esc(sideName(s))}</div>${l.length ? l.map(x => `<div>⚽ ${esc(x)}</div>`).join('') : '<div class="muted">–</div>'}</div>`; }).join('');
   renderField($('#w-field'), false);
@@ -1450,7 +1492,12 @@ function startWatch(){
 $('#w-pdf').addEventListener('click', () => exportPdf(false));
 
 /* ---------- start ---------- */
-if (VIEWER){ render(); startWatch(); }
+if (VIEWER){
+  render(); startWatch();
+  viewerBeat(); setInterval(viewerBeat, 30000);
+  document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' ? viewerBeat() : leaveViewer());
+  window.addEventListener('pagehide', leaveViewer);
+}
 else {
   if (st.runStart) keepAwake(true);
   render();
