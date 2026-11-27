@@ -170,6 +170,9 @@
          display:flex;gap:12px;align-items:center;justify-content:space-between;
          transform:translateY(calc(-100% - 30px - var(--safe-t)));transition:transform .25s;box-shadow:0 8px 30px rgba(0,0,0,.5)}
   .toast.on{transform:none}
+  .livebtn.on{border-color:var(--accent);background:rgba(255,212,0,.15)}
+  .livebtn.err{border-color:var(--warn);background:rgba(255,159,26,.15)}
+  .linkbox{background:var(--bg);border:1px dashed var(--accent);border-radius:12px;padding:12px;font-size:13.5px;word-break:break-all;margin:6px 0 12px}
   .toast span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .toast button{flex:none}
   .toast button{color:#111;font-weight:900;padding:6px 10px;border-radius:10px;background:rgba(0,0,0,.12)}
@@ -231,7 +234,10 @@
   <section id="v-live" class="view">
     <div class="topbar">
       <span class="pill" id="l-status">Klaar</span>
-      <button class="iconbtn" id="l-menu" aria-label="Menu">⋯</button>
+      <div class="row" style="gap:8px">
+        <button class="iconbtn livebtn" id="l-live" aria-label="Live link delen">📡</button>
+        <button class="iconbtn" id="l-menu" aria-label="Menu">⋯</button>
+      </div>
     </div>
 
     <div class="board">
@@ -262,6 +268,31 @@
       <h2>Tijdlijn</h2>
       <ul class="tl" id="l-tl"></ul>
     </div>
+  </section>
+
+  <!-- ================= MEEKIJKEN (andere ouders) ================= -->
+  <section id="v-watch" class="view">
+    <div class="brand"><img src="logo.png" alt="KWSC Lauwe"><div><span>Live volgen</span><b id="w-title">Match Tracker</b></div></div>
+    <div class="topbar">
+      <span class="pill" id="w-status">Verbinden…</span>
+      <span class="small muted" id="w-upd"></span>
+    </div>
+    <div class="board">
+      <div class="score">
+        <div class="tname" id="w-home"></div>
+        <div class="goals"><b id="w-hs">0</b><span>–</span><b id="w-as">0</b></div>
+        <div class="tname" id="w-away"></div>
+      </div>
+      <div class="clock">
+        <div class="t" id="w-time">00:00</div>
+        <div class="bar"><b id="w-bar"></b></div>
+        <div class="s" id="w-sub"></div>
+        <div class="periods" id="w-periods"></div>
+      </div>
+    </div>
+    <div class="card"><h2>Doelpunten</h2><div class="scorers" id="w-scorers"></div></div>
+    <div class="card"><h2>Tijdlijn</h2><ul class="tl" id="w-tl"></ul></div>
+    <button class="btn block" id="w-pdf">📄 Verslag downloaden (PDF)</button>
   </section>
 
   <!-- ================= VERSLAG ================= -->
@@ -352,15 +383,25 @@ function defaultSetup(){
   return Object.assign({team:'KWSC Lauwe', opponent:'', weAreHome:true, periods:4, periodMin:15, squadSize:12, players:{}}, p, {opponent:'', countDown:false});
 }
 function newMatch(){ return {setup:defaultSetup(), status:'setup', view:'setup', date:today(), period:1, acc:0, runStart:null, events:[], alarmed:{}, sel:'us'}; }
+/* Meekijkmodus: index.html?volg=<id> toont enkel de live wedstrijd, alleen-lezen. */
+const VOLG = new URLSearchParams(location.search).get('volg');
+const VIEWER = !!VOLG;
 let st;
-try { st = JSON.parse(localStorage.getItem(KEY)); } catch { st = null; }
-if (!st || !st.setup) st = newMatch();
-if (!st.setup.squadSize) st.setup.squadSize = 12;   // bestaande wedstrijden van vóór deze versie
+if (VIEWER){
+  st = {setup:{team:'KWSC Lauwe', opponent:'', weAreHome:true, periods:4, periodMin:15, countDown:false, squadSize:12, players:{}},
+        status:'ready', view:'watch', date:today(), period:1, acc:0, runStart:null, events:[], alarmed:{}, sel:'us'};
+} else {
+  try { st = JSON.parse(localStorage.getItem(KEY)); } catch { st = null; }
+  if (!st || !st.setup) st = newMatch();
+  if (!st.setup.squadSize) st.setup.squadSize = 12;   // bestaande wedstrijden van vóór deze versie
+}
 
 function save(){
+  if (VIEWER) return;
   localStorage.setItem(KEY, JSON.stringify(st));
   const s = S();
   localStorage.setItem(PREF, JSON.stringify({team:s.team, weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, squadSize:s.squadSize, players:s.players}));
+  schedulePublish();
 }
 
 /* ---------- helpers ---------- */
@@ -430,6 +471,7 @@ function render(){
   if (st.view === 'setup') renderSetup();
   if (st.view === 'live') renderLive();
   if (st.view === 'summary') renderSummary();
+  if (st.view === 'watch') renderWatch();
 }
 
 /* ---------- INSTELLEN ---------- */
@@ -533,7 +575,7 @@ function renderLive(){
 function renderTimeline(ul, newestFirst){
   const run = runningScores();
   let evs = sortedEvents(); if (newestFirst) evs.reverse();
-  if (!evs.length){ ul.innerHTML = `<li class="empty" style="display:block;border:0">Nog geen acties. Kies hierboven een team en tik op een actie.</li>`; return; }
+  if (!evs.length){ ul.innerHTML = `<li class="empty" style="display:block;border:0">${VIEWER ? 'Nog geen acties.' : 'Nog geen acties. Kies hierboven een team en tik op een actie.'}</li>`; return; }
   ul.innerHTML = evs.map(e => {
     if (e.sys) return `<li class="sys"><span>${SYS[e.type]} ${esc(describe(e))} · ${mmss(e.sec)}</span></li>`;
     const t = TYPES[e.type];
@@ -559,8 +601,15 @@ function tick(){
     $('#l-banner').classList.toggle('on', showBan);
     if (showBan){ $('#l-bannerTx').textContent = `⏰ Tijd is om (${pShort(st.period)})`; $('#l-bannerBtn').textContent = st.period >= S().periods ? 'Einde match' : `Einde ${pShort(st.period)}`; }
   }
+  if (st.view === 'watch'){
+    const over = el > L, running = st.status === 'running' || st.status === 'paused';
+    const txt = !running && st.status !== 'break' ? (st.status === 'finished' ? 'Einde' : '00:00')
+      : S().countDown ? (over ? '+' + mmss((el - L) / 1000) : mmss(Math.ceil((L - el) / 1000))) : mmss(el / 1000);
+    const t = $('#w-time'); t.textContent = txt; t.classList.toggle('over', over && running);
+    $('#w-bar').style.width = (st.status === 'ready' ? 0 : Math.min(100, el / L * 100)) + '%';
+  }
   const sc = $('#sheetClock'); if (sc) sc.textContent = mmss(el / 1000);
-  if (st.status === 'running' && el >= L && !st.alarmed[st.period]){ st.alarmed[st.period] = true; save(); alarm(); }
+  if (!VIEWER && st.status === 'running' && el >= L && !st.alarmed[st.period]){ st.alarmed[st.period] = true; save(); alarm(); }
 }
 setInterval(tick, 250);
 
@@ -610,6 +659,7 @@ $('#l-tl').addEventListener('click', e => { const li = e.target.closest('[data-i
 $('#r-tl').addEventListener('click', e => { const li = e.target.closest('[data-id]'); if (li) editEvent(li.dataset.id); });
 $('#l-clock').addEventListener('click', openClockSheet);
 $('#l-menu').addEventListener('click', openMenu);
+$('#l-live').addEventListener('click', openLiveSheet);
 
 /* Bij onze ploeg vragen we elke speler (doelpunt → scorer + optionele assist);
    bij de tegenstander enkel een optioneel rugnummer, wissels zonder details. */
@@ -762,6 +812,7 @@ function openMenu(){
   openSheet(`<h3>Menu</h3><div class="menu">
     <button data-m="setup"><span class="e">⚙️</span>Teams, spelers & speelwijze</button>
     ${lastEv ? `<button data-m="undo"><span class="e">↩️</span>Laatste actie ongedaan maken <span class="muted small">(${esc(TYPES[lastEv.type].label)})</span></button>` : ''}
+    <button data-m="live"><span class="e">📡</span>Live link voor ouders${st.live ? ' <span class="muted small">(actief)</span>' : ''}</button>
     <button data-m="summary"><span class="e">📄</span>Verslag & PDF</button>
     ${st.status !== 'finished' ? `<button data-m="finish"><span class="e">🏁</span>Wedstrijd nu beëindigen</button>` : ''}
     <button data-m="new"><span class="e">＋</span>Nieuwe wedstrijd</button>
@@ -771,6 +822,7 @@ function openMenu(){
     if (m === 'setup') show('setup');
     if (m === 'undo'){ st.events = st.events.filter(x => x !== lastEv); save(); render(); toast('Laatste actie verwijderd'); }
     if (m === 'summary') show('summary');
+    if (m === 'live') setTimeout(openLiveSheet, 280);
     if (m === 'finish' && confirm('De wedstrijd nu beëindigen?')) finish();
     if (m === 'new') newMatchFlow();
   };
@@ -1022,9 +1074,162 @@ async function exportPdf(share){
   if (share) toast('Delen niet mogelijk – PDF gedownload');
 }
 
+/* =====================================================================
+   LIVE DELEN via Firebase Realtime Database (REST, geen SDK nodig)
+   - de coach-telefoon logt anoniem in en schrijft de wedstrijd naar /matches/<id>
+   - ouders openen index.html?volg=<id> en lezen mee (live via EventSource)
+   ===================================================================== */
+const LIVE = {
+  apiKey: '',          // Firebase web API key
+  dbUrl: '',           // bv. https://kwsc-match-default-rtdb.europe-west1.firebasedatabase.app
+  signUp: 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=',
+  token: 'https://securetoken.googleapis.com/v1/token?key=',
+};
+const liveReady = () => !!(LIVE.apiKey && LIVE.dbUrl);
+const AUTH_KEY = 'kwsc.auth';
+async function getToken(){
+  let a = null; try { a = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch {}
+  if (a && a.exp > Date.now() + 60000) return a;
+  if (a && a.refresh){
+    const r = await fetch(LIVE.token + LIVE.apiKey, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:'grant_type=refresh_token&refresh_token=' + encodeURIComponent(a.refresh)});
+    if (r.ok){ const j = await r.json(); a = {id:j.id_token, refresh:j.refresh_token, uid:j.user_id, exp:Date.now() + Number(j.expires_in) * 1000}; }
+    else a = null;
+  }
+  if (!a){
+    const r = await fetch(LIVE.signUp + LIVE.apiKey, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({returnSecureToken:true})});
+    if (!r.ok) throw new Error('auth ' + r.status);
+    const j = await r.json(); a = {id:j.idToken, refresh:j.refreshToken, uid:j.localId, exp:Date.now() + Number(j.expiresIn) * 1000};
+  }
+  localStorage.setItem(AUTH_KEY, JSON.stringify(a)); return a;
+}
+let pubTimer, pubState = 'off';
+function setPub(x){
+  pubState = x;
+  const b = $('#l-live'); b.classList.toggle('on', !!st.live && x !== 'err'); b.classList.toggle('err', !!st.live && x === 'err');
+  const s = $('#lv-state'); if (s) s.innerHTML = liveStateHtml();
+}
+function schedulePublish(){ if (!st.live || VIEWER || !liveReady()) return; clearTimeout(pubTimer); pubTimer = setTimeout(publish, 500); }
+async function publish(){
+  if (!st.live || !liveReady()) return;
+  try {
+    setPub('busy');
+    const a = await getToken(), s = S();
+    const body = {uid:a.uid, updated:Date.now(), date:st.date, status:st.status, period:st.period, acc:st.acc, runStart:st.runStart,
+      setup:{team:s.team, opponent:s.opponent, weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, countDown:s.countDown},
+      events:st.events};
+    const r = await fetch(`${LIVE.dbUrl}/matches/${st.live}.json?auth=${encodeURIComponent(a.id)}`, {method:'PUT', body:JSON.stringify(body)});
+    if (!r.ok) throw new Error('db ' + r.status);
+    setPub('ok');
+  } catch (e) {
+    console.warn('Live publiceren mislukt', e); setPub('err');
+    clearTimeout(pubTimer); pubTimer = setTimeout(publish, 15000);     // later opnieuw proberen
+  }
+}
+window.addEventListener('online', schedulePublish);
+const liveUrl = () => `${location.origin}${location.pathname}?volg=${st.live}`;
+const liveStateHtml = () => pubState === 'ok' ? '✅ Verbonden – ouders zien elke actie meteen'
+  : pubState === 'err' ? '⚠️ Geen verbinding – nieuwe acties worden doorgestuurd zodra er weer internet is'
+  : '⏳ Verbinden…';
+function openLiveSheet(){
+  if (!liveReady()){
+    openSheet(`<h3>📡 Live link voor ouders</h3><div class="sub">Live delen is nog niet ingesteld (Firebase-gegevens ontbreken).</div>
+      <button class="btn block" id="lv-close">Sluiten</button>`);
+    $('#sheetBody').onclick = e => { if (e.target.closest('#lv-close')) closeSheet(); };
+    return;
+  }
+  if (!st.live){
+    openSheet(`<h3>📡 Live link voor ouders</h3>
+      <div class="sub">Deel een link zodat andere ouders de score, de klok en alle acties live kunnen volgen. Ze kunnen niets aanpassen.
+      Wie de link heeft, ziet de namen van de spelers die je bij acties kiest.</div>
+      <button class="btn primary big block" id="lv-start">📡 Start live delen</button>`);
+    $('#sheetBody').onclick = e => {
+      if (e.target.closest('#lv-start')){ st.live = uid() + uid(); save(); publish(); openLiveSheet(); renderLive(); }
+    };
+    return;
+  }
+  openSheet(`<h3>📡 Live link voor ouders</h3>
+    <div class="sub" id="lv-state">${liveStateHtml()}</div>
+    <div class="linkbox">${esc(liveUrl())}</div>
+    <button class="btn primary big block" id="lv-share">📤 Link delen</button>
+    <div class="row" style="margin-top:10px">
+      <button class="btn grow" id="lv-copy">📋 Kopieer</button>
+      <button class="btn danger grow" id="lv-stop">Stop live</button>
+    </div>`);
+  $('#sheetBody').onclick = async e => {
+    const [h, a] = order();
+    if (e.target.closest('#lv-share')){
+      const text = `Volg ${sideName(h)} – ${sideName(a)} live:`;
+      if (navigator.share) navigator.share({title:'Live wedstrijd', text, url:liveUrl()}).catch(() => {});
+      else navigator.clipboard.writeText(liveUrl()).then(() => toast('Link gekopieerd'));
+    }
+    if (e.target.closest('#lv-copy')) navigator.clipboard.writeText(liveUrl()).then(() => toast('Link gekopieerd'), () => toast('Kopiëren mislukt'));
+    if (e.target.closest('#lv-stop') && confirm('Live delen stoppen? Ouders zien dan geen nieuwe acties meer.')){
+      st.live = null; clearTimeout(pubTimer); save(); setPub('off'); closeSheet(); renderLive();
+    }
+  };
+}
+
+/* ---------- meekijkpagina ---------- */
+let lastUpdate = 0, watchConnected = false;
+function renderWatch(){
+  const sc = score(), [h, a] = order();
+  ['home', 'away'].forEach((k, i) => { const s = order()[i], el = $('#w-' + k); el.className = 'tname' + (s === 'us' ? ' us' : ''); el.innerHTML = crest(s) + esc(sideName(s)); });
+  $('#w-hs').textContent = sc[h]; $('#w-as').textContent = sc[a];
+  $('#w-title').textContent = `${sideName(h)} – ${sideName(a)}`;
+  document.title = `${sc[h]}–${sc[a]} · ${sideName(h)} – ${sideName(a)}`;
+  const n = S().periods;
+  $('#w-periods').innerHTML = Array.from({length:n}, (_, i) => {
+    const p = i + 1, done = p < st.period || (p === st.period && (st.status === 'break' || st.status === 'finished'));
+    return `<i class="${done ? 'done' : p === st.period && st.status !== 'ready' ? 'cur' : ''}"></i>`;
+  }).join('');
+  const txt = {ready:'Nog niet begonnen', running:cap(pLong(st.period)), paused:`${cap(pLong(st.period))} · gepauzeerd`,
+    break:`Rust na ${pShort(st.period)}`, finished:'Einde wedstrijd'}[st.status] || '';
+  const ws = $('#w-status'); ws.textContent = watchConnected || lastUpdate ? txt : 'Verbinden…';
+  ws.className = 'pill' + (st.status === 'running' ? ' live' : '');
+  $('#w-sub').textContent = `${n} × ${S().periodMin} min`;
+  $('#w-upd').textContent = lastUpdate ? 'Bijgewerkt ' + new Date(lastUpdate).toLocaleTimeString('nl-BE', {hour:'2-digit', minute:'2-digit'}) : '';
+  $('#w-scorers').innerHTML = order().map(s => { const l = scorers(s);
+    return `<div><div style="font-weight:800;color:${sideColor(s)};margin-bottom:4px">${esc(sideName(s))}</div>${l.length ? l.map(x => `<div>⚽ ${esc(x)}</div>`).join('') : '<div class="muted">–</div>'}</div>`; }).join('');
+  renderTimeline($('#w-tl'), true);
+  $('#w-pdf').style.display = st.status === 'finished' ? '' : 'none';
+  tick();
+}
+function applyRemote(d){
+  if (!d){ $('#w-status').textContent = 'Wedstrijd niet gevonden'; return; }
+  Object.assign(st.setup, d.setup || {});
+  st.status = d.status || 'ready'; st.period = d.period || 1; st.acc = d.acc || 0; st.runStart = d.runStart || null;
+  st.events = Array.isArray(d.events) ? d.events.filter(Boolean) : Object.values(d.events || {});
+  st.date = d.date || today(); lastUpdate = d.updated || Date.now();
+  renderWatch();
+}
+async function fetchOnce(){
+  try { const r = await fetch(`${LIVE.dbUrl}/matches/${encodeURIComponent(VOLG)}.json`); if (r.ok) applyRemote(await r.json()); } catch {}
+}
+let watchES;
+function startWatch(){
+  if (!liveReady()){ $('#w-status').textContent = 'Live volgen is niet beschikbaar'; return; }
+  fetchOnce();
+  try {
+    watchES && watchES.close();
+    watchES = new EventSource(`${LIVE.dbUrl}/matches/${encodeURIComponent(VOLG)}.json`);
+    watchES.onopen = () => { watchConnected = true; };
+    watchES.addEventListener('put', ev => { const m = JSON.parse(ev.data); if (m.path === '/') applyRemote(m.data); else fetchOnce(); });
+    watchES.addEventListener('patch', fetchOnce);
+    watchES.onerror = () => { watchConnected = false; };
+  } catch {}
+  // vangnet: als de live verbinding wegvalt, elke 15 s opnieuw ophalen
+  setInterval(() => { if (!watchES || watchES.readyState !== 1) fetchOnce(); }, 15000);
+}
+$('#w-pdf').addEventListener('click', () => exportPdf(false));
+
 /* ---------- start ---------- */
-if (st.runStart) keepAwake(true);
-render();
+if (VIEWER){ render(); startWatch(); }
+else {
+  if (st.runStart) keepAwake(true);
+  render();
+  if (st.live){ setPub('busy'); publish(); }
+}
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
