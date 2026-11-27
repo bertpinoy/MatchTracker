@@ -84,6 +84,8 @@
   .swatches{display:flex;flex-wrap:wrap;gap:10px}
   .sw{width:40px;height:40px;border-radius:50%;border:2px solid #555;flex:none}
   .sw.on{outline:3px solid var(--accent);outline-offset:3px}
+  .sw.custom{position:relative;overflow:hidden;cursor:pointer}
+  .sw.custom input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
   .tname.us{color:var(--accent)}
   .goals{font-size:56px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-2px;line-height:1}
   .goals span{color:var(--muted);margin:0 6px;font-weight:600}
@@ -518,8 +520,11 @@ function render(){
 function renderSetup(){
   const s = S();
   ['team', 'opponent'].forEach(k => { const el = $('#s-' + k); if (document.activeElement !== el) el.value = s[k] || ''; });
+  const cur = oppColor(), custom = !OPP_COLORS.some(([c]) => c === cur);
   $('#s-oppColor').innerHTML = OPP_COLORS.map(([c, n]) =>
-    `<button class="sw ${c === oppColor() ? 'on' : ''}" data-color="${c}" style="background:${c}" aria-label="${n}" title="${n}"></button>`).join('');
+    `<button class="sw ${c === cur ? 'on' : ''}" data-color="${c}" style="background:${c}" aria-label="${n}" title="${n}"></button>`).join('')
+    + `<label class="sw custom ${custom ? 'on' : ''}" style="background:${custom ? cur : 'conic-gradient(#e53935,#ffd400,#2e9e4f,#4fc3f7,#1e63d6,#8e44ad,#e53935)'}" title="Andere kleur">
+         <input type="color" id="s-oppCustom" value="${custom ? cur : '#00a0a0'}" aria-label="Andere kleur kiezen"></label>`;
   $$('#s-home button').forEach(b => b.classList.toggle('on', (b.dataset.home === '1') === s.weAreHome));
   $('#s-periods').textContent = s.periods;
   $('#s-periodMin').textContent = s.periodMin;
@@ -537,6 +542,14 @@ function renderSetup(){
 }
 ['team', 'opponent'].forEach(k => $('#s-' + k).addEventListener('input', e => { S()[k] = e.target.value; save(); }));
 $('#s-oppColor').addEventListener('click', e => { const b = e.target.closest('[data-color]'); if (!b) return; S().oppColor = b.dataset.color; save(); renderSetup(); });
+// eigen kleur: tijdens het kiezen enkel het bolletje bijwerken (opnieuw tekenen zou de kiezer sluiten)
+$('#s-oppColor').addEventListener('input', e => {
+  if (e.target.id !== 's-oppCustom') return;
+  S().oppColor = e.target.value.toLowerCase(); save();
+  $$('#s-oppColor .sw').forEach(s => s.classList.remove('on'));
+  const l = e.target.closest('.sw'); l.classList.add('on'); l.style.background = e.target.value;
+});
+$('#s-oppColor').addEventListener('change', e => { if (e.target.id === 's-oppCustom') renderSetup(); });
 $$('#s-home button').forEach(b => b.addEventListener('click', () => { S().weAreHome = b.dataset.home === '1'; save(); renderSetup(); }));
 $$('[data-step]').forEach(b => b.addEventListener('click', () => {
   const [k, d] = b.dataset.step.split(':'); const lim = {periods:[1, 8], periodMin:[1, 90], squadSize:[5, 30], fieldSize:[3, 11]}[k];
