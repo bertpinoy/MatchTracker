@@ -976,9 +976,12 @@ function openMenu(){
     if (m === 'new') newMatchFlow();
   };
 }
-function newMatchFlow(){
-  if (st.events.some(e => !e.sys) && !confirm('Nieuwe wedstrijd starten? De huidige wedstrijd wordt gewist (deel eerst de PDF als je die wil bewaren).')) return;
-  keepAwake(false); st = newMatch(); save(); show('setup');
+async function newMatchFlow(){
+  if (st.events.some(e => !e.sys) && !confirm('Nieuwe wedstrijd starten? De huidige wedstrijd wordt gewist (deel eerst de PDF als je die wil bewaren).' +
+      (st.live ? ' Live delen voor de ouders wordt gestopt.' : ''))) return;
+  keepAwake(false);
+  if (st.live) await endLive();      // ouders zien "Live gestopt" met de laatste stand
+  st = newMatch(); save(); setPub('off'); show('setup');
 }
 
 /* ---------- toast ---------- */
@@ -1268,6 +1271,23 @@ function setPub(x){
   const b = $('#l-live'); b.classList.toggle('on', !!st.live && !bad); b.classList.toggle('err', !!st.live && bad);
   const s = $('#lv-state'); if (s) s.innerHTML = liveStateHtml();
 }
+function liveBody(uidv, ended){
+  const s = S();
+  return {uid:uidv, updated:Date.now(), date:st.date, status:st.status, period:st.period,
+    acc: ended ? elapsed() : st.acc, runStart: ended ? null : st.runStart, liveEnded: !!ended,
+    setup:{team:s.team, opponent:s.opponent, oppColor:oppColor(), weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, countDown:s.countDown},
+    events:st.events};
+}
+/* Live delen afsluiten: laatste stand doorsturen met 'liveEnded' (klok bevroren bij de ouders). */
+async function endLive(){
+  if (!st.live || !liveReady()) { st.live = null; return; }
+  const id = st.live;
+  clearTimeout(pubTimer); st.live = null; save(); setPub('off');
+  try {
+    const a = await getToken();
+    await fetch(`${LIVE.dbUrl}/matches/${id}.json?auth=${encodeURIComponent(a.id)}`, {method:'PUT', body:JSON.stringify(liveBody(a.uid, true))});
+  } catch (e) { console.warn('Live afsluiten mislukt', e); }   // offline: ouders zien gewoon de laatste stand
+}
 function schedulePublish(){ if (!st.live || VIEWER || !liveReady()) return; clearTimeout(pubTimer); pubTimer = setTimeout(publish, 500); }
 async function publish(){
   if (!st.live || !liveReady()) return;
@@ -1275,11 +1295,8 @@ async function publish(){
   publishing = true;
   try {
     setPub('busy');
-    const a = await getToken(), s = S();
-    const body = {uid:a.uid, updated:Date.now(), date:st.date, status:st.status, period:st.period, acc:st.acc, runStart:st.runStart,
-      setup:{team:s.team, opponent:s.opponent, oppColor:oppColor(), weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, countDown:s.countDown},
-      events:st.events};
-    const r = await fetch(`${LIVE.dbUrl}/matches/${st.live}.json?auth=${encodeURIComponent(a.id)}`, {method:'PUT', body:JSON.stringify(body)});
+    const a = await getToken();
+    const r = await fetch(`${LIVE.dbUrl}/matches/${st.live}.json?auth=${encodeURIComponent(a.id)}`, {method:'PUT', body:JSON.stringify(liveBody(a.uid))});
     if (r.status === 401 || r.status === 403){ setPub('denied'); return; }   // link is van een ander account
     if (!r.ok) throw new Error('db ' + r.status);
     setPub('ok');
@@ -1364,7 +1381,7 @@ function openLiveSheet(){
       st.live = newLiveId(); setPub('busy'); save(); openLiveSheet(); return;
     }
     if (e.target.closest('#lv-stop') && confirm('Live delen stoppen? Ouders zien dan geen nieuwe acties meer.')){
-      st.live = null; clearTimeout(pubTimer); save(); setPub('off'); closeSheet(); renderLive();
+      closeSheet(); endLive().then(renderLive); renderLive();
     }
   };
 }
@@ -1384,8 +1401,9 @@ function renderWatch(){
   }).join('');
   const txt = {ready:'Nog niet begonnen', running:cap(pLong(st.period)), paused:`${cap(pLong(st.period))} · gepauzeerd`,
     break:`Rust na ${pShort(st.period)}`, finished:'Einde wedstrijd'}[st.status] || '';
-  const ws = $('#w-status'); ws.textContent = watchConnected || lastUpdate ? txt : 'Verbinden…';
-  ws.className = 'pill' + (st.status === 'running' ? ' live' : '');
+  const ended = st.liveEnded && st.status !== 'finished';
+  const ws = $('#w-status'); ws.textContent = ended ? 'Live gestopt' : watchConnected || lastUpdate ? txt : 'Verbinden…';
+  ws.className = 'pill' + (st.status === 'running' && !ended ? ' live' : '');
   $('#w-sub').textContent = `${n} × ${S().periodMin} min`;
   $('#w-upd').textContent = lastUpdate ? 'Bijgewerkt ' + new Date(lastUpdate).toLocaleTimeString('nl-BE', {hour:'2-digit', minute:'2-digit'}) : '';
   $('#w-scorers').innerHTML = order().map(s => { const l = scorers(s);
@@ -1407,7 +1425,7 @@ function applyRemote(d, fresh){
   Object.assign(st.setup, d.setup || {});
   st.status = d.status || 'ready'; st.period = d.period || 1; st.acc = d.acc || 0; st.runStart = d.runStart || null;
   st.events = Array.isArray(d.events) ? d.events.filter(Boolean) : Object.values(d.events || {});
-  st.date = d.date || today(); lastUpdate = d.updated || Date.now();
+  st.date = d.date || today(); st.liveEnded = !!d.liveEnded; lastUpdate = d.updated || Date.now();
   renderWatch();
 }
 async function fetchOnce(){
