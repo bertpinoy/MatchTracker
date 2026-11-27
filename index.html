@@ -1294,6 +1294,33 @@ async function publish(){
 window.addEventListener('online', schedulePublish);
 // tijdens het spel elke 20 s een sync, zodat de klok bij de ouders gelijk blijft lopen
 setInterval(() => { if (!VIEWER && st.live && st.status === 'running') publish(); }, 20000);
+/* ---------- automatisch opruimen ----------
+   De telefoon onthoudt welke live wedstrijden hij aanmaakte en wist ze na KEEP_DAYS dagen
+   uit Firebase (ouders kunnen tot dan nog uitslag en PDF bekijken). */
+const PUB_KEY = 'kwsc.published', KEEP_DAYS = 7;
+const loadPublished = () => { try { return JSON.parse(localStorage.getItem(PUB_KEY)) || []; } catch { return []; } };
+function rememberLive(id){
+  const list = loadPublished();
+  if (!list.some(x => x.id === id)){ list.push({id, created:Date.now()}); localStorage.setItem(PUB_KEY, JSON.stringify(list)); }
+}
+function newLiveId(){ const id = uid() + uid(); rememberLive(id); return id; }
+async function cleanupOldMatches(){
+  if (VIEWER || !liveReady() || !navigator.onLine) return;
+  const limit = Date.now() - KEEP_DAYS * 86400000;
+  const old = loadPublished().filter(x => x.created < limit && x.id !== st.live);
+  if (!old.length) return;
+  const done = [];
+  try {
+    const a = await getToken();
+    for (const x of old){
+      const r = await fetch(`${LIVE.dbUrl}/matches/${x.id}.json?auth=${encodeURIComponent(a.id)}`, {method:'DELETE'});
+      // 200 = gewist (of bestond al niet meer); 401 = van een ander/verloren account, kunnen we niet wissen
+      if (r.ok || r.status === 401 || r.status === 403) done.push(x.id);
+    }
+  } catch (e) { console.warn('Opruimen mislukt', e); }
+  if (done.length) localStorage.setItem(PUB_KEY, JSON.stringify(loadPublished().filter(x => !done.includes(x.id))));
+}
+
 const liveUrl = () => `${location.origin}${location.pathname}?volg=${st.live}`;
 const liveStateHtml = () => pubState === 'ok' ? '✅ Verbonden – ouders zien elke actie meteen'
   : pubState === 'err' ? '⚠️ Geen verbinding – nieuwe acties worden doorgestuurd zodra er weer internet is'
@@ -1312,7 +1339,7 @@ function openLiveSheet(){
       Wie de link heeft, ziet de namen van de spelers die je bij acties kiest.</div>
       <button class="btn primary big block" id="lv-start">📡 Start live delen</button>`);
     $('#sheetBody').onclick = e => {
-      if (e.target.closest('#lv-start')){ st.live = uid() + uid(); setPub('busy'); save(); openLiveSheet(); renderLive(); }
+      if (e.target.closest('#lv-start')){ st.live = newLiveId(); setPub('busy'); save(); openLiveSheet(); renderLive(); }
     };
     return;
   }
@@ -1334,7 +1361,7 @@ function openLiveSheet(){
     }
     if (e.target.closest('#lv-copy')) navigator.clipboard.writeText(liveUrl()).then(() => toast('Link gekopieerd'), () => toast('Kopiëren mislukt'));
     if (e.target.closest('#lv-new') && confirm('Een nieuwe link maken? De oude link wordt dan niet meer bijgewerkt; deel de nieuwe link opnieuw.')){
-      st.live = uid() + uid(); setPub('busy'); save(); openLiveSheet(); return;
+      st.live = newLiveId(); setPub('busy'); save(); openLiveSheet(); return;
     }
     if (e.target.closest('#lv-stop') && confirm('Live delen stoppen? Ouders zien dan geen nieuwe acties meer.')){
       st.live = null; clearTimeout(pubTimer); save(); setPub('off'); closeSheet(); renderLive();
@@ -1409,7 +1436,8 @@ if (VIEWER){ render(); startWatch(); }
 else {
   if (st.runStart) keepAwake(true);
   render();
-  if (st.live){ setPub('busy'); publish(); }
+  if (st.live){ rememberLive(st.live); setPub('busy'); publish(); }
+  setTimeout(cleanupOldMatches, 3000);   // na het opstarten, zonder de app te vertragen
 }
 /* Updates: bij elke terugkeer naar de app nakijken of er een nieuwe versie is; zo ja, herladen
    (alles staat in localStorage, er gaat niets verloren). Niet midden in een open venster. */
