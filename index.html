@@ -111,7 +111,11 @@
         background:color-mix(in srgb,var(--team) 7%,var(--card));border:1px solid color-mix(in srgb,var(--team) 35%,var(--line));margin-bottom:14px}
   .ev{aspect-ratio:1/1;min-height:72px;border-radius:14px;background:var(--bg);border:1px solid var(--line);
       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11.5px;font-weight:700;line-height:1.1;text-align:center;padding:4px}
-  .ev .e{font-size:26px;line-height:1}
+  .ico{width:22px;height:22px;flex:none;color:#b4b4b4;vertical-align:-4px}
+  .ev .ico{width:28px;height:28px}
+  .sheet h3 .ico{width:24px;height:24px}
+  .toast .ico{width:18px;height:18px;color:#111;margin-right:6px;vertical-align:-3px}
+  .scorers .ico{width:15px;height:15px;margin-right:5px;vertical-align:-2px}
   .ev.hl{background:color-mix(in srgb,var(--team) 18%,var(--bg));border-color:color-mix(in srgb,var(--team) 60%,var(--line))}
   .ev:active{transform:scale(.95)}
   .tl{list-style:none;margin:0;padding:0}
@@ -196,6 +200,43 @@
 </style>
 </head>
 <body>
+<!-- Iconen voor de acties: sobere lijniconen (24x24, grijs via currentColor); enkel de kaarten in kleur -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-goal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M12 7.6l3.8 2.8-1.45 4.5h-4.7L8.2 10.4z" fill="currentColor"/><path d="M12 7.6V3.2M15.8 10.4l4.6-1.4M14.35 14.9l2.8 3.9M9.65 14.9l-2.8 3.9M8.2 10.4 3.6 9"/></g></symbol>
+    <symbol id="i-pen_goal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.5 11V4.5h13V11"/><circle cx="9" cy="17" r="4"/><circle cx="9" cy="17" r="1.3" fill="currentColor"/><path d="M16.5 15.5l2 2 3.5-4"/></g></symbol>
+    <symbol id="i-own_goal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 20V5h18v15"/><path d="M15.5 18v-5a3.5 3.5 0 0 0-7 0v1"/><path d="M6 12.5l2.5 2.5 2.5-2.5"/></g></symbol>
+    <symbol id="i-pen_miss" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.5 11V4.5h13V11"/><circle cx="9" cy="17" r="4"/><circle cx="9" cy="17" r="1.3" fill="currentColor"/><path d="M17 14l4 4M21 14l-4 4"/></g></symbol>
+    <symbol id="i-shot" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="15.5" cy="12" r="5.5"/><circle cx="15.5" cy="12" r="1.6" fill="currentColor"/><path d="M2.5 9h5M4 12h4.5M2.5 15h5"/></g></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 21v-3.5L5 13.8a1.7 1.7 0 0 1 2.6-2.2L9 13V5.5a1.5 1.5 0 0 1 3 0V11V4a1.5 1.5 0 0 1 3 0v7V5.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-3 5.2V21z"/></g></symbol>
+    <symbol id="i-corner" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 21h18M3 21V3.5"/><path d="M3 3.5l9 3.2-9 3.3"/><path d="M3 15a6 6 0 0 1 6 6"/></g></symbol>
+    <symbol id="i-freekick" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="5.5" cy="18.5" r="2.8"/><circle cx="5.5" cy="18.5" r=".9" fill="currentColor"/><path d="M8.5 16C11 9 16 5.5 20.5 7" stroke-dasharray="2 2.6"/><path d="M17.5 4.8 20.5 7l-2.4 2.8"/></g></symbol>
+    <symbol id="i-offside" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 21.5V3"/><path d="M6 3.5h12v8H6"/><path d="M6 3.5l12 8"/><path d="M14 15v6.5" stroke-dasharray="1.6 2.4"/></g></symbol>
+    <symbol id="i-yellow" viewBox="0 0 24 24"><g fill="rgba(217,178,0,.85)" stroke="#d9b200" stroke-width="1.8" stroke-linejoin="round">
+      <rect x="7" y="3.5" width="10" height="15" rx="1.6" transform="rotate(10 12 11)"/></g></symbol>
+    <symbol id="i-red" viewBox="0 0 24 24"><g fill="rgba(201,64,60,.85)" stroke="#c9403c" stroke-width="1.8" stroke-linejoin="round">
+      <rect x="7" y="3.5" width="10" height="15" rx="1.6" transform="rotate(10 12 11)"/></g></symbol>
+    <symbol id="i-sub" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 4v15M4.5 15.5 8 19l3.5-3.5"/><path d="M16 20V5M12.5 8.5 16 5l3.5 3.5"/></g></symbol>
+    <symbol id="i-injury" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></g></symbol>
+    <symbol id="i-chance" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></g></symbol>
+    <symbol id="i-highlight" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></g></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 3h8.5L19 7.5V21H6z"/><path d="M14.5 3v4.5H19"/><path d="M9 12h7M9 16h5"/></g></symbol>
+  </defs>
+</svg>
 <div class="wrap">
 
   <!-- ================= INSTELLEN ================= -->
@@ -367,6 +408,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad = n => String(n).padStart(2, '0');
+const ico = k => `<svg class="ico" aria-hidden="true"><use href="#i-${k}"/></svg>`;   // icoon van een actie
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -607,7 +649,7 @@ function renderLive(){
   $$('#l-teamseg button').forEach((b, i) => { const s = order()[i]; b.dataset.team = s; b.textContent = sideName(s); b.style.setProperty('--c', sideColor(s)); b.classList.toggle('on', st.sel === s); });
   document.documentElement.style.setProperty('--team', sideColor(st.sel));
   $('#l-grid').innerHTML = Object.entries(TYPES).map(([k, t]) =>
-    `<button class="ev ${t.hl ? 'hl' : ''}" data-type="${k}"><span class="e">${t.icon}</span>${t.short}</button>`).join('');
+    `<button class="ev ${t.hl ? 'hl' : ''}" data-type="${k}">${ico(k)}${t.short}</button>`).join('');
 
   const n = S().periods;
   $('#l-periods').innerHTML = Array.from({length:n}, (_, i) => {
@@ -640,7 +682,7 @@ function renderTimeline(ul, newestFirst){
     const t = TYPES[e.type];
     return `<li class="tap" data-id="${e.id}">
       <div class="tm"><b>${matchMinute(e)}</b>${pShort(e.period)} ${mmss(e.sec)}</div>
-      <div class="ic">${t.icon}</div>
+      <div class="ic">${ico(e.type)}</div>
       <div class="tx"><div class="who"><i style="background:${sideColor(e.team)}"></i>${esc(sideName(e.team))}${run[e.id] ? ` · <span style="color:var(--accent)">${run[e.id]}</span>` : ''}</div>
       <div class="d">${esc(describe(e))}</div></div></li>`;
   }).join('');
@@ -833,7 +875,7 @@ function logEvent(ev){
   st.events.push(e); save(); renderLive();
   if (navigator.vibrate) navigator.vibrate(30);
   const who = e.player || e.in || sideName(e.team);
-  toast(`${TYPES[e.type].icon} ${TYPES[e.type].label} – ${who}`, () => { st.events = st.events.filter(x => x.id !== e.id); save(); render(); });
+  toast(`${ico(e.type)}${esc(TYPES[e.type].label)} – ${esc(who)}`, () => { st.events = st.events.filter(x => x.id !== e.id); save(); render(); });
 }
 function editEvent(id){ const e = st.events.find(x => x.id === id); if (e && !e.sys) openEditSheet(e); }
 
@@ -846,7 +888,7 @@ $('#scrim').addEventListener('click', closeSheet);
 function openPicker(type, side, when, fields){
   const t = TYPES[type], data = {};
   let step = 0, manual = false;
-  const head = () => `<h3>${t.icon} ${t.label}</h3>
+  const head = () => `<h3>${ico(type)} ${t.label}</h3>
     <div class="sub"><span style="color:${sideColor(side)};font-weight:800">● ${esc(sideName(side))}</span> · ${pShort(when.period)} ${mmss(when.sec)} (${matchMinute(when)})${data.player ? ' · ' + esc(data.player) : ''}${data.in ? ' · erin: ' + esc(data.in) : ''}</div>`;
   const draw = () => {
     const f = fields[step], q = (QUESTION_BY_TYPE[type] || {})[f] || QUESTION[f];
@@ -914,7 +956,7 @@ function openEditSheet(ev){
   let side = ev.team;
   const fields = ev.type === 'note' ? [] : t.fields;
   openSheet(`
-    <h3>${t.icon} ${t.label} bewerken</h3>
+    <h3>${ico(ev.type)} ${t.label} bewerken</h3>
     <div class="seg" id="ed-team" style="margin:8px 0 4px">${order().map(s => `<button data-team="${s}">${esc(sideName(s))}</button>`).join('')}</div>
     <label class="f">Tijd</label>
     <div class="row"><select id="ed-period" style="width:100px">${Array.from({length:S().periods}, (_, i) => `<option value="${i + 1}" ${i + 1 === ev.period ? 'selected' : ''}>${pShort(i + 1)}</option>`).join('')}</select>
@@ -1003,7 +1045,7 @@ async function newMatchFlow(){
 /* ---------- toast ---------- */
 let toastTimer;
 function toast(msg, undo){
-  $('#toastTx').textContent = msg;
+  $('#toastTx').innerHTML = msg;   // alle meldingen zijn vaste tekst of al ge-escaped
   const b = $('#toastBtn'); b.style.display = undo ? '' : 'none';
   b.onclick = () => { undo && undo(); $('#toast').classList.remove('on'); };
   $('#toast').classList.add('on'); clearTimeout(toastTimer);
@@ -1062,7 +1104,7 @@ function renderSummary(){
     <div><div class="m">${r.label}</div><div class="bars"><b style="flex:${r[h] / tot || .0001};background:${sideColor(h)}"></b><b style="flex:${r[a] / tot || .0001};background:${sideColor(a)}"></b></div></div>
     <div class="v">${r[a]}</div></div>`; }).join('');
   $('#r-scorers').innerHTML = order().map(s => { const l = scorers(s);
-    return `<div><div style="font-weight:800;color:${sideColor(s)};margin-bottom:4px">${esc(sideName(s))}</div>${l.length ? l.map(x => `<div>⚽ ${esc(x)}</div>`).join('') : '<div class="muted">–</div>'}</div>`; }).join('');
+    return `<div><div style="font-weight:800;color:${sideColor(s)};margin-bottom:4px">${esc(sideName(s))}</div>${l.length ? l.map(x => `<div>${ico('goal')}${esc(x)}</div>`).join('') : '<div class="muted">–</div>'}</div>`; }).join('');
   renderTimeline($('#r-tl'), false);
 }
 $('#r-back').addEventListener('click', () => show('live'));
@@ -1462,7 +1504,7 @@ function renderWatch(){
   $('#w-sub').textContent = `${n} × ${S().periodMin} min`;
   $('#w-upd').textContent = wUpdText();
   $('#w-scorers').innerHTML = order().map(s => { const l = scorers(s);
-    return `<div><div style="font-weight:800;color:${sideColor(s)};margin-bottom:4px">${esc(sideName(s))}</div>${l.length ? l.map(x => `<div>⚽ ${esc(x)}</div>`).join('') : '<div class="muted">–</div>'}</div>`; }).join('');
+    return `<div><div style="font-weight:800;color:${sideColor(s)};margin-bottom:4px">${esc(sideName(s))}</div>${l.length ? l.map(x => `<div>${ico('goal')}${esc(x)}</div>`).join('') : '<div class="muted">–</div>'}</div>`; }).join('');
   renderField($('#w-field'), false);
   renderTimeline($('#w-tl'), true);
   $('#w-pdf').style.display = st.status === 'finished' ? '' : 'none';
