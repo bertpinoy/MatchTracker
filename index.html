@@ -164,11 +164,14 @@
   .mmss{display:flex;align-items:center;gap:6px}
   .mmss input{text-align:center;font-size:20px;font-weight:800}
   .bignum{text-align:center;font-size:34px;font-weight:900;letter-spacing:2px}
-  .toast{position:fixed;left:50%;bottom:calc(18px + var(--safe-b));transform:translate(-50%,140%);z-index:50;background:var(--accent);color:#111;
-         padding:12px 14px 12px 18px;border-radius:14px;font-weight:800;display:flex;gap:14px;align-items:center;transition:transform .25s;
-         width:max-content;max-width:92vw;white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,.5)}
-  .toast.on{transform:translate(-50%,0)}
-  .toast span{overflow:hidden;text-overflow:ellipsis}
+  /* melding bovenaan: onderaan valt hij op iPhone deels weg achter de browserbalk */
+  .toast{position:fixed;left:12px;right:12px;top:calc(10px + var(--safe-t));max-width:496px;margin:0 auto;z-index:60;
+         background:var(--accent);color:#111;padding:12px 12px 12px 16px;border-radius:14px;font-weight:800;
+         display:flex;gap:12px;align-items:center;justify-content:space-between;
+         transform:translateY(calc(-100% - 30px - var(--safe-t)));transition:transform .25s;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  .toast.on{transform:none}
+  .toast span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .toast button{flex:none}
   .toast button{color:#111;font-weight:900;padding:6px 10px;border-radius:10px;background:rgba(0,0,0,.12)}
 </style>
 </head>
@@ -194,8 +197,7 @@
 
     <div class="card">
       <h2>Speelwijze</h2>
-      <div class="chips" id="s-presets"></div>
-      <div class="row" style="margin-top:14px">
+      <div class="row">
         <div class="grow">
           <label class="f">Periodes</label>
           <div class="stepper"><button data-step="periods:-1">−</button><div class="val" id="s-periods">4</div><button data-step="periods:1">+</button></div>
@@ -219,6 +221,7 @@
       <div class="stepper" style="margin-bottom:14px"><button data-step="squadSize:-1">−</button><div class="val" id="s-squadSize">12</div><button data-step="squadSize:1">+</button></div>
       <div class="nums" id="s-nums"></div>
       <div class="hint">Tik op een rugnummer om een naam toe te voegen. Heeft een speler een hoger nummer? Gebruik ＋ nummer. De spelers worden onthouden voor de volgende wedstrijd.</div>
+      <button class="btn danger block" id="s-resetPlayers" style="margin-top:12px">🗑 Alle namen wissen</button>
     </div>
 
     <button class="btn primary big block" id="s-go">Naar de wedstrijd ▶</button>
@@ -293,7 +296,7 @@
 
 <div class="scrim" id="scrim"></div>
 <div class="sheet" id="sheet"><div class="grab"></div><div id="sheetBody"></div></div>
-<div class="toast" id="toast"><span id="toastTx"></span><button id="toastBtn">Ongedaan maken</button></div>
+<div class="toast" id="toast"><span id="toastTx"></span><button id="toastBtn">↩ Ongedaan</button></div>
 
 <script>
 'use strict';
@@ -312,7 +315,6 @@ const pad = n => String(n).padStart(2, '0');
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
 const uid = () => Math.random().toString(36).slice(2, 9);
 
-const PRESETS = [[4,15],[4,12],[4,10],[2,30],[2,25],[2,20],[2,45]];
 
 /* Acties. score: 1 = punt voor dit team, -1 = punt voor de tegenstander (eigen doelpunt). */
 const TYPES = {
@@ -346,7 +348,8 @@ const SYS = {period_start:'▶', period_end:'⏸'};
 function loadPrefs(){ try { return JSON.parse(localStorage.getItem(PREF)) || {}; } catch { return {}; } }
 function defaultSetup(){
   const p = loadPrefs();
-  return Object.assign({team:'KWSC Lauwe', opponent:'', weAreHome:true, periods:4, periodMin:15, countDown:true, squadSize:12, players:{}}, p, {opponent:''});
+  // klok start altijd op "gespeeld"; tijdens de match kan je wisselen
+  return Object.assign({team:'KWSC Lauwe', opponent:'', weAreHome:true, periods:4, periodMin:15, squadSize:12, players:{}}, p, {opponent:'', countDown:false});
 }
 function newMatch(){ return {setup:defaultSetup(), status:'setup', view:'setup', date:today(), period:1, acc:0, runStart:null, events:[], alarmed:{}, sel:'us'}; }
 let st;
@@ -357,7 +360,7 @@ if (!st.setup.squadSize) st.setup.squadSize = 12;   // bestaande wedstrijden van
 function save(){
   localStorage.setItem(KEY, JSON.stringify(st));
   const s = S();
-  localStorage.setItem(PREF, JSON.stringify({team:s.team, weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, countDown:s.countDown, squadSize:s.squadSize, players:s.players}));
+  localStorage.setItem(PREF, JSON.stringify({team:s.team, weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, squadSize:s.squadSize, players:s.players}));
 }
 
 /* ---------- helpers ---------- */
@@ -437,8 +440,6 @@ function renderSetup(){
   $('#s-periods').textContent = s.periods;
   $('#s-periodMin').textContent = s.periodMin;
   $('#s-total').textContent = `${s.periods} × ${s.periodMin} min = ${s.periods * s.periodMin} min speeltijd`;
-  $('#s-presets').innerHTML = PRESETS.map(([p, m]) =>
-    `<button class="chip ${p === s.periods && m === s.periodMin ? 'on' : ''}" data-preset="${p},${m}">${p} × ${m}′</button>`).join('');
   $$('#s-count button').forEach(b => b.classList.toggle('on', (b.dataset.count === 'down') === s.countDown));
   $('#s-squadSize').textContent = s.squadSize;
   const nums = new Set(Array.from({length:s.squadSize}, (_, i) => i + 1));
@@ -451,18 +452,18 @@ function renderSetup(){
 }
 ['team', 'opponent'].forEach(k => $('#s-' + k).addEventListener('input', e => { S()[k] = e.target.value; save(); }));
 $$('#s-home button').forEach(b => b.addEventListener('click', () => { S().weAreHome = b.dataset.home === '1'; save(); renderSetup(); }));
-$('#s-presets').addEventListener('click', e => {
-  const b = e.target.closest('[data-preset]'); if (!b) return;
-  const [p, m] = b.dataset.preset.split(',').map(Number); S().periods = p; S().periodMin = m; save(); renderSetup();
-});
 $$('[data-step]').forEach(b => b.addEventListener('click', () => {
   const [k, d] = b.dataset.step.split(':'); const lim = {periods:[1, 8], periodMin:[1, 90], squadSize:[5, 30]}[k];
   S()[k] = Math.min(lim[1], Math.max(lim[0], S()[k] + Number(d))); save(); renderSetup();
 }));
 $$('#s-count button').forEach(b => b.addEventListener('click', () => { S().countDown = b.dataset.count === 'down'; save(); renderSetup(); }));
 $('#s-nums').addEventListener('click', e => { const b = e.target.closest('[data-num]'); if (b) openPlayerSheet(b.dataset.num); });
+$('#s-resetPlayers').addEventListener('click', () => {
+  if (!Object.keys(S().players).length){ toast('Er zijn nog geen namen ingevuld'); return; }
+  if (!confirm('Alle spelersnamen wissen?')) return;
+  S().players = {}; save(); renderSetup(); toast('Alle namen gewist');
+});
 $('#s-go').addEventListener('click', () => {
-  if (!S().opponent.trim()) { $('#s-opponent').focus(); toast('Vul eerst de tegenstander in'); return; }
   if (st.status === 'setup') st.status = 'ready';
   if (st.period > S().periods) st.period = S().periods;
   show('live');
