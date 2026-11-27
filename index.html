@@ -189,6 +189,9 @@
   .pcard.on{background:var(--accent);border-color:var(--accent)}
   .pcard.on b,.pcard.on span{color:#111}
   .pcard.bench{opacity:.45}
+  .pcard.off{opacity:.55;border-color:#5a2a2c;border-style:dashed} .pcard.off b{color:#ff8a8d;text-decoration:line-through}
+  .pcard.off .gkmark .ico{color:inherit}
+  #l-field .ico,#w-field .small .ico{width:15px;height:15px;margin-right:5px;vertical-align:-3px}
   .fchips{display:flex;flex-wrap:wrap;gap:6px}
   .fchip{padding:7px 10px;border-radius:10px;background:rgba(255,212,0,.12);border:1px solid rgba(255,212,0,.5);font-weight:700;font-size:14px}
   .fchip b{color:var(--accent);margin-right:5px}
@@ -581,7 +584,7 @@ function describe(e){
   if (e.type === 'lineup') return (e.start ? `Opstelling ${pLong(e.period)}` : 'Opstelling aangepast') + ': ' + (e.players || []).join(', ')
     + (e.keeper ? ` · keeper: ${e.keeper}` : '');
   if (!t) return (e.type === 'period_start' ? 'Start ' : 'Einde ') + pLong(e.period);
-  let d = t.label;
+  let d = isSecondYellow(e) ? 'Tweede gele kaart (uitgesloten)' : e.type === 'red' ? 'Rode kaart (uitgesloten)' : t.label;
   if (e.type === 'sub'){ const p = []; if (e.in) p.push('erin: ' + e.in); if (e.out) p.push('eruit: ' + e.out); if (p.length) d += ' – ' + p.join(', '); }
   else if (e.player) d += ' – ' + e.player;
   if (e.assist) d += ` (assist: ${e.assist})`;
@@ -771,17 +774,43 @@ setInterval(tick, 250);
    Afgeleid uit de acties: laatste 'lineup' + daarna onze wissels. Zo klopt het ook na
    ongedaan maken, bewerken of verwijderen van een wissel. Spelers als label "#7 Lucas". */
 const pnum = l => parseInt(String(l).replace(/^#/, ''));
+/* Uitsluitingen van onze spelers: rode kaart of tweede gele kaart. Map nummer → {label, why, id}. */
+function sentOffNow(){
+  const off = new Map(), yellows = {};
+  for (const e of sortedEvents()){
+    if (e.team !== 'us' || !e.player || isNaN(pnum(e.player))) continue;
+    const n = pnum(e.player);
+    if (e.type === 'yellow'){ yellows[n] = (yellows[n] || 0) + 1; if (yellows[n] === 2 && !off.has(n)) off.set(n, {label:e.player, why:'2x geel', id:e.id}); }
+    if (e.type === 'red' && !off.has(n)) off.set(n, {label:e.player, why:'rood', id:e.id});
+  }
+  return off;
+}
 function lineupNow(){
   let m = null, keeper = null;
+  const yellows = {}, off = new Set();
+  const sendOff = n => { off.add(n); if (m) m.delete(n); if (keeper && pnum(keeper) === n) keeper = null; };
   for (const e of sortedEvents()){
-    if (e.type === 'lineup'){ m = new Map((e.players || []).map(l => [pnum(l), l])); keeper = e.keeper || null; }
-    else if (m && e.type === 'sub' && e.team === 'us'){
-      if (e.out) m.delete(pnum(e.out)); if (e.in) m.set(pnum(e.in), e.in);
+    if (e.type === 'lineup'){ m = new Map((e.players || []).map(l => [pnum(l), l]).filter(([n]) => !off.has(n))); keeper = e.keeper || null; }
+    else if (e.type === 'sub' && e.team === 'us' && m){
+      if (e.out) m.delete(pnum(e.out)); if (e.in && !off.has(pnum(e.in))) m.set(pnum(e.in), e.in);
       if (keeper && e.out && pnum(e.out) === pnum(keeper)) keeper = e.in || null;   // wie de keeper vervangt, gaat in doel
+    }
+    // rode kaart of tweede gele kaart: speler moet van het veld en mag niet meer terug
+    else if (e.team === 'us' && e.player && (e.type === 'red' || e.type === 'yellow')){
+      const n = pnum(e.player);
+      if (e.type === 'yellow') yellows[n] = (yellows[n] || 0) + 1;
+      if (e.type === 'red' || yellows[n] >= 2) sendOff(n);
     }
   }
   if (m) m.keeper = keeper && m.has(pnum(keeper)) ? m.get(pnum(keeper)) : null;
   return m;
+}
+/* Is dit de tweede gele kaart voor dezelfde speler van dezelfde ploeg? */
+function isSecondYellow(e){
+  if (e.type !== 'yellow' || !e.player) return false;
+  let c = 0;
+  for (const x of sortedEvents()){ if (x.type === 'yellow' && x.team === e.team && pnum(x.player) === pnum(e.player)) c++; if (x === e) break; }
+  return c === 2;
 }
 function squadList(){
   const r = roster();
@@ -798,16 +827,19 @@ function renderField(box, editable){
     return;
   }
   const on = [...lu.entries()].sort((a, b) => a[0] - b[0]);
-  const bench = editable ? roster().filter(p => !lu.has(p.num)) : [];
+  const off = sentOffNow();
+  const bench = editable ? roster().filter(p => !lu.has(p.num) && !off.has(p.num)) : [];
+  const offHtml = off.size ? `<div class="small" style="margin-top:6px;color:#ff8a8d">${ico('red')}Uitgesloten: ${[...off.entries()].sort((a, b) => a[0] - b[0])
+    .map(([, o]) => `${esc(o.label.replace(/^#/, ''))} (${o.why})`).join(' · ')}</div>` : '';
   box.innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">${title} (${on.length})</h2>
       ${editable ? `<button class="chip" data-lineup>${sym('edit')}Wijzig</button>` : ''}</div>
     <div class="fchips">${on.map(([n, l]) => { const name = String(l).replace(/^#\d+\s*/, ''), gk = lu.keeper && pnum(lu.keeper) === n;
       return `<span class="fchip${gk ? ' gk' : ''}">${gk ? sym('keeper') : ''}<b>${n}</b>${esc(name)}</span>`; }).join('')}</div>
-    ${bench.length ? `<div class="small muted" style="margin-top:8px">Bank: ${bench.map(p => `${p.num} ${esc(p.name)}`).join(' · ')}</div>` : ''}`;
+    ${bench.length ? `<div class="small muted" style="margin-top:8px">Bank: ${bench.map(p => `${p.num} ${esc(p.name)}`).join(' · ')}</div>` : ''}${offHtml}`;
 }
 /* Opstelling kiezen. start=true: begin van een periode (tijd 0), anders een wijziging nu. */
 function openLineupSheet({title, period, start, primary, skip, onDone}){
-  const cur = lineupNow();
+  const cur = lineupNow(), off = sentOffNow();
   const sel = new Set(cur ? cur.keys() : []);
   let gk = cur && cur.keeper ? pnum(cur.keeper) : null;
   const max = S().fieldSize || 8;
@@ -817,12 +849,15 @@ function openLineupSheet({title, period, start, primary, skip, onDone}){
     const chosen = list.filter(p => sel.has(p.num));
     openSheet(`<h3>${sym('lineup')} ${title}</h3>
       <div class="sub">Tik de spelers aan die op het veld staan · <b style="color:${sel.size === max ? 'var(--accent)' : 'var(--warn)'}">${sel.size} / ${max} gekozen</b></div>
-      <div class="pgrid">${list.map(p => `<button class="pcard ${sel.has(p.num) ? 'on' : ''}" data-n="${p.num}">${gk === p.num ? '<i class="gkmark">' + sym('keeper') + '</i>' : ''}<b>${p.num}</b>${p.name ? `<span>${esc(p.name)}</span>` : ''}</button>`).join('')}</div>
+      <div class="pgrid">${list.map(p => off.has(p.num)
+        ? `<button class="pcard off" data-off="${p.num}"><i class="gkmark">${ico('red')}</i><b>${p.num}</b><span>${p.name ? esc(p.name) : 'uitgesloten'}</span></button>`
+        : `<button class="pcard ${sel.has(p.num) ? 'on' : ''}" data-n="${p.num}">${gk === p.num ? '<i class="gkmark">' + sym('keeper') + '</i>' : ''}<b>${p.num}</b>${p.name ? `<span>${esc(p.name)}</span>` : ''}</button>`).join('')}</div>
       <div class="q" style="margin-top:16px">${sym('keeper')} Keeper</div>
       ${chosen.length ? `<div class="chips">${chosen.map(p => `<button class="chip ${gk === p.num ? 'on' : ''}" data-gk="${p.num}">${p.num}${p.name ? ' ' + esc(p.name) : ''}</button>`).join('')}</div>`
         : '<div class="muted small">Kies eerst de spelers hierboven.</div>'}
       <div class="row" style="margin-top:14px"><button class="btn grow" id="lu-skip">${skip}</button><button class="btn primary grow" id="lu-ok">${primary}</button></div>`);
     $('#sheetBody').onclick = e => {
+      if (e.target.closest('[data-off]')){ toast('Uitgesloten speler – mag niet meer spelen'); if (navigator.vibrate) navigator.vibrate(80); return; }
       const c = e.target.closest('[data-n]');
       if (c){
         const n = Number(c.dataset.n);
@@ -928,7 +963,9 @@ function logEvent(ev){
   st.events.push(e); save(); renderLive();
   if (navigator.vibrate) navigator.vibrate(30);
   const who = e.player || e.in || sideName(e.team);
-  toast(`${ico(e.type)}${esc(TYPES[e.type].label)} – ${esc(who)}`, () => { st.events = st.events.filter(x => x.id !== e.id); save(); render(); });
+  const off = e.team === 'us' && e.player && (e.type === 'red' || isSecondYellow(e));
+  const label = isSecondYellow(e) ? '2e geel' : TYPES[e.type].label;
+  toast(`${ico(off ? 'red' : e.type)}${esc(label)} – ${esc(who)}${off ? ' · van het veld' : ''}`, () => { st.events = st.events.filter(x => x.id !== e.id); save(); render(); });
 }
 function editEvent(id){ const e = st.events.find(x => x.id === id); if (e && !e.sys) openEditSheet(e); }
 
@@ -956,7 +993,7 @@ function openPicker(type, side, when, fields){
       // met opstelling: wissel-erin = bank, wissel-eruit = veld; anders spelers op het veld eerst
       const lu = lineupNow();
       if (lu && lu.size){
-        if (type === 'sub' && f === 'in') list = list.filter(p => !lu.has(p.num));
+        if (type === 'sub' && f === 'in'){ const off = sentOffNow(); list = list.filter(p => !lu.has(p.num) && !off.has(p.num)); }
         else if (type === 'sub' && f === 'out') list = [...lu.entries()].sort((a, b) => a[0] - b[0])
           .filter(([n]) => !taken.includes(n)).map(([n, l]) => ({num:n, name:String(l).replace(/^#\d+\s*/, '')}));
         else list = [...list.filter(p => lu.has(p.num)), ...list.filter(p => !lu.has(p.num)).map(p => ({...p, bench:true}))];
