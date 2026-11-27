@@ -159,6 +159,12 @@
   .pcard b{font-size:26px;line-height:1;color:var(--accent);font-weight:900}
   .pcard span{font-size:13px;font-weight:700;margin-top:5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .pcard:active{background:rgba(255,212,0,.18);border-color:var(--accent)}
+  .pcard.on{background:var(--accent);border-color:var(--accent)}
+  .pcard.on b,.pcard.on span{color:#111}
+  .pcard.bench{opacity:.45}
+  .fchips{display:flex;flex-wrap:wrap;gap:6px}
+  .fchip{padding:7px 10px;border-radius:10px;background:rgba(255,212,0,.12);border:1px solid rgba(255,212,0,.5);font-weight:700;font-size:14px}
+  .fchip b{color:var(--accent);margin-right:5px}
   .menu button{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;padding:0 6px;border-bottom:1px solid var(--line);font-weight:700;text-align:left}
   .menu button:last-child{border-bottom:0}
   .menu button .e{font-size:20px;width:28px;text-align:center}
@@ -269,6 +275,8 @@
     <div class="teamseg" id="l-teamseg"><button></button><button></button></div>
     <div class="grid" id="l-grid"></div>
 
+    <div class="card" id="l-field"></div>
+
     <div class="card">
       <h2>Tijdlijn</h2>
       <ul class="tl" id="l-tl"></ul>
@@ -295,6 +303,7 @@
         <div class="periods" id="w-periods"></div>
       </div>
     </div>
+    <div class="card" id="w-field"></div>
     <div class="card"><h2>Doelpunten</h2><div class="scorers" id="w-scorers"></div></div>
     <div class="card"><h2>Tijdlijn</h2><ul class="tl" id="w-tl"></ul></div>
     <button class="btn block" id="w-pdf">📄 Verslag downloaden (PDF)</button>
@@ -378,7 +387,7 @@ const QUESTION_BY_TYPE = {
   injury:{player:'Wie is geblesseerd?'}, chance:{player:'Wie had de kans?'}, shot:{player:'Wie schoot?'}
 };
 const FIELD_LABEL = {player:'Speler', assist:'Assist', in:'Erin', out:'Eruit'};
-const SYS = {period_start:'▶', period_end:'⏸'};
+const SYS = {period_start:'▶', period_end:'⏸', lineup:'📋'};
 
 /* ---------- state ---------- */
 function loadPrefs(){ try { return JSON.parse(localStorage.getItem(PREF)) || {}; } catch { return {}; } }
@@ -451,7 +460,8 @@ function roster(){
 }
 const plabel = (num, name) => name ? `#${num} ${name}` : `#${num}`;
 function sortedEvents(){
-  const sysRank = e => e.sys ? (e.type === 'period_start' ? -1 : 1) : 0;
+  // start periode → (opstelling / acties op volgorde van ingeven) → einde periode
+  const sysRank = e => e.type === 'period_start' ? -1 : e.type === 'period_end' ? 1 : 0;
   return [...st.events].sort((a, b) => a.period - b.period || a.sec - b.sec || sysRank(a) - sysRank(b) || a.ts - b.ts);
 }
 function scoringSide(e){ const t = TYPES[e.type]; return t && t.score ? (t.score > 0 ? e.team : other(e.team)) : null; }
@@ -462,6 +472,7 @@ function score(onlyPeriod){
 }
 function describe(e){
   const t = TYPES[e.type];
+  if (e.type === 'lineup') return (e.start ? `Opstelling ${pLong(e.period)}` : 'Opstelling aangepast') + ': ' + (e.players || []).join(', ');
   if (!t) return (e.type === 'period_start' ? 'Start ' : 'Einde ') + pLong(e.period);
   let d = t.label;
   if (e.type === 'sub'){ const p = []; if (e.in) p.push('erin: ' + e.in); if (e.out) p.push('eruit: ' + e.out); if (p.length) d += ' – ' + p.join(', '); }
@@ -591,6 +602,7 @@ function renderLive(){
     case 'break':   main.textContent = `▶ Start ${pShort(st.period + 1)}`; status.textContent = `Rust na ${pShort(st.period)}`; end.textContent = '🏁 Einde match'; break;
     case 'finished':main.textContent = '📄 Verslag & PDF'; status.textContent = 'Einde wedstrijd'; ctr.classList.add('single'); end.style.display = 'none'; break;
   }
+  renderField($('#l-field'), true);
   renderTimeline($('#l-tl'), true);
   tick();
 }
@@ -599,6 +611,7 @@ function renderTimeline(ul, newestFirst){
   let evs = sortedEvents(); if (newestFirst) evs.reverse();
   if (!evs.length){ ul.innerHTML = `<li class="empty" style="display:block;border:0">${VIEWER ? 'Nog geen acties.' : 'Nog geen acties. Kies hierboven een team en tik op een actie.'}</li>`; return; }
   ul.innerHTML = evs.map(e => {
+    if (e.type === 'lineup') return `<li class="sys"><span>📋 ${e.start ? 'Opstelling ' + pShort(e.period) : 'Opstelling aangepast ' + mmss(e.sec)}: ${esc((e.players || []).map(pnum).join(', '))}</span></li>`;
     if (e.sys) return `<li class="sys"><span>${SYS[e.type]} ${esc(describe(e))} · ${mmss(e.sec)}</span></li>`;
     const t = TYPES[e.type];
     return `<li class="tap" data-id="${e.id}">
@@ -635,11 +648,83 @@ function tick(){
 }
 setInterval(tick, 250);
 
+/* ---------- opstelling: wie staat er op het veld ----------
+   Afgeleid uit de acties: laatste 'lineup' + daarna onze wissels. Zo klopt het ook na
+   ongedaan maken, bewerken of verwijderen van een wissel. Spelers als label "#7 Lucas". */
+const pnum = l => parseInt(String(l).replace(/^#/, ''));
+function lineupNow(){
+  let m = null;
+  for (const e of sortedEvents()){
+    if (e.type === 'lineup') m = new Map((e.players || []).map(l => [pnum(l), l]));
+    else if (m && e.type === 'sub' && e.team === 'us'){ if (e.out) m.delete(pnum(e.out)); if (e.in) m.set(pnum(e.in), e.in); }
+  }
+  return m;
+}
+function squadList(){
+  const r = roster();
+  return r.length ? r : Array.from({length:S().squadSize}, (_, i) => ({num:i + 1, name:''}));
+}
+const hasStartLineup = p => st.events.some(e => e.type === 'lineup' && e.start && e.period === p);
+function renderField(box, editable){
+  const lu = lineupNow();
+  const forNext = editable && st.status === 'break';
+  const title = forNext ? `Opstelling ${pShort(st.period + 1)}` : 'Op het veld';
+  if (!lu || !lu.size){
+    box.innerHTML = `<h2>${title}</h2><div class="muted small">${editable ? 'Nog geen opstelling gekozen.' : 'Opstelling nog niet doorgegeven.'}</div>
+      ${editable ? `<button class="btn block" data-lineup style="margin-top:10px">📋 Opstelling kiezen</button>` : ''}`;
+    return;
+  }
+  const on = [...lu.entries()].sort((a, b) => a[0] - b[0]);
+  const bench = editable ? roster().filter(p => !lu.has(p.num)) : [];
+  box.innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">${title} (${on.length})</h2>
+      ${editable ? `<button class="chip" data-lineup>✏️ Wijzig</button>` : ''}</div>
+    <div class="fchips">${on.map(([n, l]) => { const name = String(l).replace(/^#\d+\s*/, ''); return `<span class="fchip"><b>${n}</b>${esc(name)}</span>`; }).join('')}</div>
+    ${bench.length ? `<div class="small muted" style="margin-top:8px">Bank: ${bench.map(p => `${p.num} ${esc(p.name)}`).join(' · ')}</div>` : ''}`;
+}
+/* Opstelling kiezen. start=true: begin van een periode (tijd 0), anders een wijziging nu. */
+function openLineupSheet({title, period, start, primary, skip, onDone}){
+  const cur = lineupNow();
+  const sel = new Set(cur ? cur.keys() : []);
+  const draw = () => {
+    const list = squadList();
+    openSheet(`<h3>📋 ${title}</h3>
+      <div class="sub">Tik de spelers aan die op het veld staan · <b style="color:var(--accent)">${sel.size} gekozen</b></div>
+      <div class="pgrid">${list.map(p => `<button class="pcard ${sel.has(p.num) ? 'on' : ''}" data-n="${p.num}"><b>${p.num}</b>${p.name ? `<span>${esc(p.name)}</span>` : ''}</button>`).join('')}</div>
+      <div class="row" style="margin-top:14px"><button class="btn grow" id="lu-skip">${skip}</button><button class="btn primary grow" id="lu-ok">${primary}</button></div>`);
+    $('#sheetBody').onclick = e => {
+      const c = e.target.closest('[data-n]');
+      if (c){ const n = Number(c.dataset.n); sel.has(n) ? sel.delete(n) : sel.add(n); const sc = $('#sheet').scrollTop; draw(); $('#sheet').scrollTop = sc; return; }
+      if (e.target.closest('#lu-skip')){ closeSheet(); onDone && onDone(false); }
+      if (e.target.closest('#lu-ok')){
+        const players = [...sel].sort((a, b) => a - b).map(n => plabel(n, (S().players[n] || '').trim()));
+        if (start) st.events = st.events.filter(x => !(x.type === 'lineup' && x.start && x.period === period));
+        st.events.push({id:uid(), sys:true, type:'lineup', team:'us', start:!!start, players, period, sec: start ? 0 : capture().sec, ts:Date.now()});
+        save(); closeSheet(); renderLive(); onDone && onDone(true);
+      }
+    };
+  };
+  draw();
+}
+function editLineup(){
+  if (st.status === 'ready') openLineupSheet({title:'Wie begint de match?', period:1, start:true, primary:'Opslaan', skip:'Annuleer'});
+  else if (st.status === 'break') openLineupSheet({title:`Wie start ${pShort(st.period + 1)}?`, period:st.period + 1, start:true, primary:'Opslaan', skip:'Annuleer'});
+  else if (st.status !== 'finished') openLineupSheet({title:'Opstelling aanpassen', period:st.period, start:false, primary:'Opslaan', skip:'Annuleer'});
+}
+$('#l-field').addEventListener('click', e => { if (e.target.closest('[data-lineup]')) editLineup(); });
+
 function capture(){ return {period: st.period, sec: Math.floor(elapsed() / 1000)}; }
 function addSys(type){ st.events.push({id:uid(), sys:true, type, team:null, ...capture(), ts:Date.now()}); }
 
 function mainAction(){
   unlockAudio();
+  if (st.status === 'ready' && !hasStartLineup(1))
+    return openLineupSheet({title:'Wie begint de match?', period:1, start:true, primary:'Opslaan & aftrap', skip:'Aftrap zonder opstelling', onDone:kickoffNow});
+  if (st.status === 'break' && !hasStartLineup(st.period + 1))
+    return openLineupSheet({title:`Wie start ${pShort(st.period + 1)}?`, period:st.period + 1, start:true,
+      primary:`Opslaan & start ${pShort(st.period + 1)}`, skip:'Zelfde spelers', onDone:kickoffNow});
+  kickoffNow();
+}
+function kickoffNow(){
   switch (st.status){
     case 'ready':
       st.status = 'running'; st.acc = 0; st.runStart = Date.now(); st.date = today(); addSys('period_start'); keepAwake(true); break;
@@ -659,7 +744,12 @@ function endPeriod(){
   const el = elapsed(), last = st.period >= S().periods;
   if (el < lenMs() - 5000 && !confirm(`Pas ${mmss(el / 1000)} gespeeld. ${cap(pLong(st.period))} toch beëindigen?`)) return;
   st.acc = el; st.runStart = null; addSys('period_end'); st.status = 'break';
-  if (last) finish(); else { keepAwake(false); save(); renderLive(); }
+  if (last) finish();
+  else {
+    keepAwake(false); save(); renderLive();
+    // meteen de spelers voor de volgende periode laten aanduiden (kan ook later via ✏️ of bij de start)
+    openLineupSheet({title:`Wie start ${pShort(st.period + 1)}?`, period:st.period + 1, start:true, primary:'Opslaan', skip:'Later'});
+  }
 }
 function finish(){
   if (st.status === 'running' || st.status === 'paused'){ st.acc = elapsed(); st.runStart = null; addSys('period_end'); }
@@ -719,14 +809,20 @@ function openPicker(type, side, when, fields){
         <input type="number" inputmode="numeric" id="pk-num" min="1" max="99" class="bignum" placeholder="#">
         <div class="row" style="margin-top:14px"><button class="btn grow" data-pick="">Zonder nummer</button><button class="btn primary grow" id="pk-ok">Opslaan</button></div>`);
     } else {
-      const taken = Object.values(data);
-      let list = roster();
-      if (!list.length) list = Array.from({length:S().squadSize}, (_, i) => ({num:i + 1, name:''}));
-      list = list.filter(p => !taken.includes(plabel(p.num, p.name)));
+      const taken = Object.values(data).map(pnum);
+      let list = squadList().filter(p => !taken.includes(p.num));
+      // met opstelling: wissel-erin = bank, wissel-eruit = veld; anders spelers op het veld eerst
+      const lu = lineupNow();
+      if (lu && lu.size){
+        if (type === 'sub' && f === 'in') list = list.filter(p => !lu.has(p.num));
+        else if (type === 'sub' && f === 'out') list = [...lu.entries()].sort((a, b) => a[0] - b[0])
+          .filter(([n]) => !taken.includes(n)).map(([n, l]) => ({num:n, name:String(l).replace(/^#\d+\s*/, '')}));
+        else list = [...list.filter(p => lu.has(p.num)), ...list.filter(p => !lu.has(p.num)).map(p => ({...p, bench:true}))];
+      }
       openSheet(`${head()}
         <div class="q">${q}${optional ? ' <span class="muted small">(optioneel)</span>' : ''}</div>
         ${optional ? `<button class="btn primary block" data-pick="" style="margin-bottom:10px">Geen assist – opslaan</button>` : ''}
-        <div class="pgrid">${list.map(p => `<button class="pcard" data-pick="${esc(plabel(p.num, p.name))}"><b>${p.num}</b>${p.name ? `<span>${esc(p.name)}</span>` : ''}</button>`).join('')}</div>
+        <div class="pgrid">${list.map(p => `<button class="pcard${p.bench ? ' bench' : ''}" data-pick="${esc(plabel(p.num, p.name))}"><b>${p.num}</b>${p.name ? `<span>${esc(p.name)}</span>` : ''}</button>`).join('')}</div>
         ${manual ? `<div class="row" style="margin-top:10px"><input type="number" inputmode="numeric" id="pk-num" placeholder="Rugnummer" class="grow"><button class="btn primary" id="pk-ok">OK</button></div>` : ''}
         <div class="row" style="margin-top:10px">
           ${step > 0 ? `<button class="btn grow" id="pk-back">← Terug</button>` : ''}
@@ -1035,6 +1131,11 @@ async function buildPdf(){
   if (!evs.length){ T(M, y, 'Geen acties genoteerd.', 10, false, '#777777'); y += 14; }
   let zebra = false;
   evs.forEach(e => {
+    if (e.type === 'lineup'){
+      const ls = wrap(cap(describe(e)), 8.5, CW - 20), hh = 6 + ls.length * 11;
+      need(hh + 4); R(M, y - 2, CW, hh, '#fff8d6');
+      ls.forEach((l, i) => T(M + 10, y + 9 + i * 11, l, 8.5, i === 0, '#5a4a00')); y += hh + 4; zebra = false; return;
+    }
     if (e.sys){
       need(20); R(M, y - 2, CW, 16, '#f3f3f3');
       TC(mid, y + 9, `${cap(describe(e))}  (${mmss(e.sec)})`, 8.5, true, '#666666'); y += 20; zebra = false; return;
@@ -1231,6 +1332,7 @@ function renderWatch(){
   $('#w-upd').textContent = lastUpdate ? 'Bijgewerkt ' + new Date(lastUpdate).toLocaleTimeString('nl-BE', {hour:'2-digit', minute:'2-digit'}) : '';
   $('#w-scorers').innerHTML = order().map(s => { const l = scorers(s);
     return `<div><div style="font-weight:800;color:${sideColor(s)};margin-bottom:4px">${esc(sideName(s))}</div>${l.length ? l.map(x => `<div>⚽ ${esc(x)}</div>`).join('') : '<div class="muted">–</div>'}</div>`; }).join('');
+  renderField($('#w-field'), false);
   renderTimeline($('#w-tl'), true);
   $('#w-pdf').style.display = st.status === 'finished' ? '' : 'none';
   tick();
