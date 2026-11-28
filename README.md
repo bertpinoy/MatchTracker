@@ -47,7 +47,7 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 
 **Na de wedstrijd**
 - Verslag met eindstand, score per periode, statistieken, doelpuntenmakers en alle acties.
-- PDF-verslag (A4, met clublogo) delen of downloaden, of het verslag als tekst delen (bv. WhatsApp).
+- PDF-verslag (A4, met clublogo, aanvangsuur en een overzicht van doelpuntenmakers en assistgevers) delen of downloaden, of het verslag als tekst delen (bv. WhatsApp).
 
 **Live link voor ouders**
 - Met 📡 *Start live delen* krijg je een link (`…/index.html?volg=<code>`). Ouders zien zonder account het aanvangsuur (tot de aftrap), de score, de klok, wie op het veld staat, doelpunten en de tijdlijn, live bijgewerkt.
@@ -133,7 +133,7 @@ en open <http://localhost:5173>.
 
 **Bij een nieuwe functie:** werk ook `handleiding.html` bij als het gebruik verandert.
 
-**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v20` → `v21`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
+**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v21` → `v22`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
 
 **Firebase-regels wijzigen:** pas `database.rules.json` aan en plak de inhoud in de Firebase-console (*Realtime Database → Regels → Publiceren*). De repo publiceert de regels niet automatisch.
 

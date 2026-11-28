@@ -1191,13 +1191,27 @@ function stats(){
   st.events.forEach(e => { if (!e.sys && r[e.type] && e.type !== 'goals') r[e.type][e.team]++; });
   return STAT_ROWS.filter(([k]) => k === 'goals' || r[k].us + r[k].them > 0).map(([k, l]) => ({key:k, label:l, ...r[k]}));
 }
+/* Overzicht per speler: aantal doelpunten en assists voor een ploeg (meeste eerst). */
+function scorerTable(side){
+  const rows = new Map();
+  const row = label => { if (!rows.has(label)) rows.set(label, {label, g:0, a:0}); return rows.get(label); };
+  for (const e of st.events){
+    if ((e.type === 'goal' || e.type === 'pen_goal') && e.team === side){
+      row(e.player || 'Onbekend').g++;
+      if (e.type === 'goal' && e.assist) row(e.assist).a++;
+    }
+    if (e.type === 'own_goal' && e.team === other(side)) row('Eigen doelpunt tegenstander').g++;
+  }
+  const n = l => isNaN(pnum(l)) ? 999 : pnum(l);
+  return [...rows.values()].sort((x, y) => y.g - x.g || y.a - x.a || n(x.label) - n(y.label));
+}
 function scorers(side){
   return sortedEvents().filter(e => scoringSide(e) === side)
     .map(e => `${matchMinute(e)} ${e.type === 'own_goal' ? 'Eigen doelpunt' + (e.player ? ' (' + e.player + ')' : '') : (e.player || 'Onbekend')}${e.type === 'pen_goal' ? ' (pen.)' : ''}${e.assist ? ' – assist ' + e.assist : ''}`);
 }
 function metaLine(){
   const d = new Date((st.date || today()) + 'T12:00');
-  return [d.toLocaleDateString('nl-BE', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) + (S().kickoff ? ` · ${S().kickoff}` : ''),
+  return [d.toLocaleDateString('nl-BE', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) + (S().kickoff ? ` · aftrap ${S().kickoff}` : ''),
     `${S().periods} × ${S().periodMin} min`];
 }
 /* "om 10:30", of "za 29 nov om 10:30" als de match niet vandaag is */
@@ -1317,6 +1331,31 @@ async function buildPdf(){
     TC(x0 + colW * n + colW / 2, y, String(sc[s]), 11, true); y += 18;
   });
 
+  // snel overzicht: wie scoorde en wie gaf assists (per ploeg naast elkaar)
+  section('Doelpuntenmakers & assists');
+  {
+    const colW = CW / 2 - 12, cols = [[M, scorerTable(h), hn], [mid + 12, scorerTable(a), an]];
+    const nRows = Math.max(1, ...cols.map(c => c[1].length));
+    need(18);
+    cols.forEach(([x, , name]) => {
+      T(x, y, fit(name, 10, true, colW - 110), 10, true);
+      TR(x + colW - 52, y, 'Goals', 8.5, true, '#666666'); TR(x + colW, y, 'Assists', 8.5, true, '#666666');
+    });
+    y += 6; R(M, y, colW, .6, '#dddddd'); R(mid + 12, y, colW, .6, '#dddddd'); y += 13;
+    for (let i = 0; i < nRows; i++){
+      need(15);
+      cols.forEach(([x, list]) => {
+        const r = list[i];
+        if (!r){ if (i === 0) T(x, y, 'Geen doelpunten', 9.5, false, '#888888'); return; }
+        if (i % 2 === 0) R(x - 4, y - 10, colW + 8, 14, '#fafafa');
+        T(x, y, fit(r.label, 9.5, false, colW - 110), 9.5, false);
+        TR(x + colW - 58, y, r.g ? String(r.g) : '-', 10, !!r.g, r.g ? '#1b1b1b' : '#aaaaaa');
+        TR(x + colW - 12, y, r.a ? String(r.a) : '-', 10, !!r.a, r.a ? '#1b1b1b' : '#aaaaaa');
+      });
+      y += 15;
+    }
+  }
+
   section('Statistieken');
   need(16); TC(M + 30, y, fit(hn, 9, true, 110), 9, true, '#666666'); TC(W - M - 30, y, fit(an, 9, true, 110), 9, true, '#666666'); y += 16;
   stats().forEach(r => {
@@ -1329,7 +1368,7 @@ async function buildPdf(){
     y += 22;
   });
 
-  section('Doelpunten');
+  section('Doelpunten (chronologisch)');
   const gh = scorers(h), ga = scorers(a), rows = Math.max(gh.length, ga.length, 1);
   need(16); T(M, y, fit(hn, 10, true, CW / 2 - 10), 10, true); T(mid + 10, y, fit(an, 10, true, CW / 2 - 10), 10, true); y += 15;
   for (let i = 0; i < rows; i++){ need(14); T(M, y, fit(gh[i] || (i === 0 ? '-' : ''), 9.5, false, CW / 2 - 14), 9.5); T(mid + 10, y, fit(ga[i] || (i === 0 ? '-' : ''), 9.5, false, CW / 2 - 14), 9.5); y += 14; }
