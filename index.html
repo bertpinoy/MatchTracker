@@ -176,6 +176,17 @@
   .scorers{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px}
   .scorers div div{padding:3px 0}
   .actions{display:grid;gap:10px}
+  /* animatie bij een doelpunt (ouderview) */
+  #w-board{position:relative;overflow:hidden}
+  .goalfx{position:absolute;inset:0;z-index:4;background:var(--accent);color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+          opacity:0;pointer-events:none;border-radius:inherit;text-align:center;padding:10px}
+  .goalfx img{width:64px;height:64px}
+  .goalfx .big{font-size:46px;font-weight:900;letter-spacing:.06em;line-height:1}
+  .goalfx .small{font-size:15px;font-weight:800}
+  .goalfx .sc{font-size:24px;font-weight:900;margin-top:2px;font-variant-numeric:tabular-nums}
+  .goalfx.go{animation:goalfx 2.8s ease-in-out}
+  @keyframes goalfx{0%{opacity:0;transform:scale(.9)}12%{opacity:1;transform:scale(1)}20%{transform:scale(1.03)}28%{transform:scale(1)}85%{opacity:1}100%{opacity:0}}
+  @media (prefers-reduced-motion: reduce){ .goalfx.go{animation:none} }
   /* compact doelpuntenoverzicht (ouderview) */
   .gs-team{font-weight:800;font-size:14px;margin:2px 0 4px;display:flex;align-items:center;gap:8px}
   .gs-team i{width:9px;height:9px;border-radius:50%;display:inline-block}
@@ -425,7 +436,9 @@
       <span class="pill" id="w-status">Verbinden…</span>
       <span class="small muted" id="w-upd"></span>
     </div>
-    <div class="board">
+    <div class="board" id="w-board">
+      <!-- animatie bij een doelpunt van onze ploeg (variant 6 uit mockups/goal-animaties.html) -->
+      <div class="goalfx" id="w-goalfx" aria-live="polite"><img src="logo.png" alt=""><div class="big">GOAL!</div><div class="small" id="w-gfx-who"></div><div class="sc" id="w-gfx-sc"></div></div>
       <div class="score">
         <div class="tname" id="w-home"></div>
         <div class="goals"><b id="w-hs">0</b><span>–</span><b id="w-as">0</b></div>
@@ -1734,6 +1747,23 @@ function applyRemote(d, fresh){
   st.events = Array.isArray(d.events) ? d.events.filter(Boolean) : Object.values(d.events || {});
   st.date = d.date || today(); st.liveEnded = !!d.liveEnded; lastUpdate = d.updated || Date.now();
   renderWatch();
+  // doelpunt van onze ploeg sinds de vorige update? → animatie (niet bij het eerste laden)
+  const us = score().us;
+  if (prevUsGoals !== null && us > prevUsGoals) playGoalFx();
+  prevUsGoals = us;
+}
+let prevUsGoals = null;
+function playGoalFx(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const last = sortedEvents().filter(e => scoringSide(e) === 'us').pop();
+  if (!last) return;
+  const who = last.type === 'own_goal' ? 'Eigen doelpunt tegenstander'
+    : (last.player || sideName('us')) + (last.type === 'pen_goal' ? ' (pen.)' : '') + (last.assist ? ` · assist ${last.assist}` : '');
+  const sc = score(), [h, a] = order();
+  $('#w-gfx-who').textContent = who;
+  $('#w-gfx-sc').textContent = `${sc[h]} – ${sc[a]}`;
+  const fx = $('#w-goalfx'); fx.classList.remove('go'); void fx.offsetWidth; fx.classList.add('go');
+  try { if (navigator.vibrate) navigator.vibrate([80, 60, 80]); } catch {}
 }
 async function fetchOnce(){
   try { const r = await fetch(`${LIVE.dbUrl}/matches/${encodeURIComponent(VOLG)}.json`); if (r.ok) applyRemote(await r.json()); } catch {}

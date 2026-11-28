@@ -19,7 +19,7 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 | `mockups/iconen.html` | Ontwerp-mockup van de actie-iconen (variant A/B voor de kaarten). Niet gebruikt door de app. |
 | `mockups/symbolen.html` | Ontwerp-mockup van de overige symbolen (knoppen, menu, live delen). Niet gebruikt door de app. |
 | `mockups/ouderview.html` | Ontwerp-mockup van het doelpuntenoverzicht in de ouderview (variant B is ingebouwd). Niet gebruikt door de app. |
-| `mockups/goal-animaties.html` | Mockup met zes mogelijke animaties bij een doelpunt in de ouderview (nog niet ingebouwd). |
+| `mockups/goal-animaties.html` | Mockup met zes mogelijke animaties bij een doelpunt in de ouderview (variant 6, volledig scherm, is ingebouwd). |
 | `sw.js` | Service worker: bewaart de app offline en zorgt dat nieuwe versies meteen binnenkomen. |
 | `manifest.webmanifest` | Web-app-manifest (naam, icoon, kleuren) zodat de app op het beginscherm geïnstalleerd kan worden. |
 | `logo.png` | Clublogo van KWSC Lauwe (app-icoon, kop van de app en van het PDF-verslag). |
@@ -54,6 +54,7 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 **Live link voor ouders**
 - Met 📡 *Start live delen* krijg je een link (`…/index.html?volg=<code>`). Ouders zien zonder account het aanvangsuur (tot de aftrap), de score, de klok, wie op het veld staat, een overzicht van doelpuntenmakers en assistgevers met het verloop, en de tijdlijn, live bijgewerkt.
 - Het aantal (anonieme) kijkers is zichtbaar voor ouders en coach.
+- Scoort onze ploeg, dan wordt het scorebord bij de ouders ±2,5 s geel met "GOAL!", scorer, assist en nieuwe stand (niet bij een tegendoelpunt en niet als de telefoon "minder beweging" gebruikt).
 - Een nieuwe wedstrijd starten of *Stop live delen* sluit het delen netjes af ("Live gestopt").
 - Live wedstrijden worden na 7 dagen automatisch uit de database gewist door de telefoon die ze aanmaakte.
 
@@ -135,7 +136,7 @@ en open <http://localhost:5173>.
 
 **Bij een nieuwe functie:** werk ook `handleiding.html` bij als het gebruik verandert.
 
-**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v27` → `v28`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
+**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v28` → `v29`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
 
 **Firebase-regels wijzigen:** pas `database.rules.json` aan en plak de inhoud in de Firebase-console (*Realtime Database → Regels → Publiceren*). De repo publiceert de regels niet automatisch.
 
