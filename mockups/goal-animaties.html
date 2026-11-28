@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup – animaties bij een doelpunt (ouderview)</title>
+<style>
+  :root{--bg:#0a0a0a;--card:#161616;--line:#2e2e2e;--text:#f6f6f6;--muted:#a6a6a6;--accent:#ffd400}
+  *{box-sizing:border-box}
+  body{margin:0;background:#050505;color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .page{max-width:1200px;margin:0 auto;padding:28px 18px 60px}
+  h1{font-size:22px;margin:0 0 4px} .lead{color:var(--muted);margin:0 0 18px;max-width:820px}
+  .bar{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:12px;background:#222;border:1px solid var(--line);color:var(--text);font-weight:700;cursor:pointer;font:inherit;font-weight:700}
+  .btn.primary{background:var(--accent);color:#111;border-color:transparent}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:22px}
+  .item{background:#0d0d0d;border:1px solid var(--line);border-radius:20px;padding:14px}
+  .item h2{font-size:15px;margin:0 0 2px;display:flex;align-items:center;gap:10px}
+  .item h2 .n{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#111;font-size:12.5px;font-weight:900;display:flex;align-items:center;justify-content:center}
+  .item p{color:var(--muted);font-size:13.5px;margin:0 0 12px}
+  .meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12.5px;color:var(--muted)}
+  /* scorebord zoals in de ouderview */
+  .stage{position:relative;overflow:hidden;border-radius:22px}
+  .board{position:relative;background:linear-gradient(180deg,#1c1c1c,#0f0f0f);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:22px;padding:14px 12px 12px}
+  .score{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
+  .tname{font-weight:800;font-size:14.5px} .tname.us{color:var(--accent)}
+  .crest{display:block;width:32px;height:32px;margin:0 auto 4px}
+  .crest.opp{border-radius:50%;background:#e53935;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}
+  .goals{font-size:54px;font-weight:900;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums;display:flex;align-items:center}
+  .goals span{color:var(--muted);margin:0 6px;font-weight:600}
+  .goals b{display:inline-block;position:relative}
+  .clock{margin-top:10px;text-align:center;padding:6px 0;border-radius:16px;background:rgba(0,0,0,.35)}
+  .clock .t{font-size:40px;font-weight:900;line-height:1.05} .clock .s{font-size:12.5px;color:var(--muted)}
+
+  /* 1 – score flitst */
+  .a1 .goals b.us.go{animation:a1 1.6s ease-out}
+  @keyframes a1{0%{color:var(--text)}10%,40%,70%{color:var(--accent);transform:scale(1.35);text-shadow:0 0 22px rgba(255,212,0,.9)}25%,55%{color:var(--text);transform:scale(1);text-shadow:none}100%{color:var(--text);transform:none}}
+
+  /* 2 – scorebord licht op */
+  .a2 .board.go{animation:a2 1.8s ease-out}
+  @keyframes a2{0%{box-shadow:none}15%,45%{box-shadow:0 0 0 3px var(--accent),0 0 40px rgba(255,212,0,.55);background:linear-gradient(180deg,#3a3206,#1a1704)}30%{box-shadow:0 0 0 2px rgba(255,212,0,.5);background:linear-gradient(180deg,#1c1c1c,#0f0f0f)}100%{box-shadow:none}}
+  .a2 .goals b.us.go{animation:pop .5s .1s ease-out}
+  @keyframes pop{50%{transform:scale(1.3);color:var(--accent)}}
+
+  /* 3 – banner met scorer */
+  .banner{position:absolute;left:10px;right:10px;top:10px;z-index:3;background:var(--accent);color:#111;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;
+          transform:translateY(-140%);opacity:0;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .banner img{width:34px;height:34px}
+  .banner .big{font-size:20px;font-weight:900;letter-spacing:.04em;line-height:1}
+  .banner .small{font-size:13px;font-weight:700}
+  .a3 .banner.go{animation:a3 3.2s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes a3{0%{transform:translateY(-140%);opacity:0}12%{transform:none;opacity:1}85%{transform:none;opacity:1}100%{transform:translateY(-140%);opacity:0}}
+
+  /* 4 – cijfer rolt */
+  .roll{display:inline-block;height:54px;overflow:hidden;vertical-align:top}
+  .roll i{display:block;font-style:normal;height:54px;line-height:54px}
+  .roll .inner{display:block;transition:none}
+  .a4 .roll.go .inner{animation:a4 .9s cubic-bezier(.3,1.4,.5,1) forwards}
+  @keyframes a4{from{transform:translateY(0)}to{transform:translateY(-54px)}}
+  .a4 .roll.go{color:var(--accent);transition:color 1.5s}
+
+  /* 5 – confetti in clubkleuren */
+  .confetti{position:absolute;inset:0;pointer-events:none;z-index:2}
+  .confetti i{position:absolute;top:38%;left:50%;width:7px;height:11px;border-radius:2px;opacity:0}
+  .a5 .confetti.go i{animation:a5 1.6s ease-out forwards}
+  @keyframes a5{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r))}}
+  .a5 .goals b.us.go{animation:pop .5s ease-out}
+
+  /* 6 – volledig scherm */
+  .full{position:absolute;inset:0;z-index:4;background:var(--accent);color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+        opacity:0;pointer-events:none;border-radius:22px}
+  .full img{width:64px;height:64px}
+  .full .big{font-size:44px;font-weight:900;letter-spacing:.06em;line-height:1}
+  .full .small{font-size:15px;font-weight:800}
+  .full .sc{font-size:22px;font-weight:900;margin-top:2px}
+  .a6 .full.go{animation:a6 2.8s ease-in-out}
+  @keyframes a6{0%{opacity:0;transform:scale(.9)}12%{opacity:1;transform:scale(1)}20%{transform:scale(1.03)}28%{transform:scale(1)}85%{opacity:1}100%{opacity:0}}
+
+  /* tegendoelpunt: enkel een korte, ingetogen markering */
+  .opp-note{font-size:12.5px;color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:.01ms !important} }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Mockup – animaties bij een doelpunt van onze ploeg (ouderview)</h1>
+  <p class="lead">Zes mogelijke animaties op het scorebord van de ouderlink. Klik op <b>Afspelen</b> bij een variant, of op <b>Alles afspelen</b>. De animatie start enkel bij een doelpunt van KWSC Lauwe; bij een tegendoelpunt verandert de score gewoon zonder show. Varianten kunnen ook gecombineerd worden (bv. 1 + 3).</p>
+  <div class="bar"><button class="btn primary" id="all">▶ Alles afspelen</button><button class="btn" id="reset">↺ Score terugzetten</button></div>
+  <div class="grid" id="grid"></div>
+  <p class="opp-note">Telefoons die "minder beweging" ingesteld hebben (toegankelijkheid), krijgen automatisch geen animatie. Op Android kan de telefoon van de ouder ook kort trillen bij een doelpunt (iPhone staat dat niet toe in een webpagina).</p>
+</div>
+
+<script>
+  const V = [
+    ['Score flitst', 'Het cijfer van onze ploeg flitst drie keer geel op en wordt even groter. Sober en kort (±1,5 s).'],
+    ['Scorebord licht op', 'Het hele scorebord krijgt een gele gloed en rand die twee keer pulseert; het cijfer springt even op.'],
+    ['Banner met scorer', 'Een gele balk schuift bovenaan in met "GOAL!" en wie scoorde en de assist gaf. Blijft ±3 s staan.'],
+    ['Cijfer rolt', 'Het oude cijfer rolt naar boven weg en het nieuwe rolt binnen, zoals een tellerbord, en kleurt even geel.'],
+    ['Confetti', 'Een korte uitbarsting van confetti in geel, zwart en wit vanuit de score. Het meest feestelijk, maar nog kort.'],
+    ['Volledig scherm', 'Het scorebord wordt ±2,5 s volledig geel met het logo, "GOAL!", de scorer en de nieuwe stand.'],
+  ];
+  let us = 1;
+  const board = i => `
+    <div class="stage">
+      ${i === 2 ? `<div class="banner"><img src="../logo.png" alt=""><div><div class="big">GOAL!</div><div class="small">#7 Lucas · assist #10 Emma</div></div></div>` : ''}
+      ${i === 4 ? `<div class="confetti">${Array.from({length:36}, (_, k) => { const a = Math.random() * Math.PI * 2, d = 70 + Math.random() * 110;
+          return `<i style="--x:${Math.cos(a) * d}px;--y:${Math.sin(a) * d - 30}px;--r:${Math.random() * 720 - 360}deg;background:${['#ffd400','#ffd400','#111','#ffffff'][k % 4]};${k % 4 === 2 ? 'outline:1px solid #555;' : ''}animation-delay:${Math.random() * .12}s"></i>`; }).join('')}</div>` : ''}
+      ${i === 5 ? `<div class="full"><img src="../logo.png" alt=""><div class="big">GOAL!</div><div class="small">#7 Lucas · assist #10 Emma</div><div class="sc"><span class="nus">2</span> – 1</div></div>` : ''}
+      <div class="board">
+        <div class="score">
+          <div class="tname us"><img class="crest" src="../logo.png" alt="">KWSC Lauwe</div>
+          <div class="goals">${i === 3 ? `<b class="us roll"><span class="inner"><i class="old">1</i><i class="new">2</i></span></b>` : `<b class="us">1</b>`}<span>–</span><b>1</b></div>
+          <div class="tname"><span class="crest opp">Z</span>Zwevegem</div>
+        </div>
+        <div class="clock"><div class="t">08:24</div><div class="s">2e kwart · 4 × 15 min</div></div>
+      </div>
+    </div>`;
+  document.getElementById('grid').innerHTML = V.map(([t, d], i) =>
+    `<div class="item a${i + 1}" data-i="${i}"><h2><span class="n">${i + 1}</span>${t}</h2><p>${d}</p>${board(i)}
+       <div class="meta"><span>KWSC Lauwe scoort: 1–1 → 2–1</span><button class="btn" data-play="${i}">▶ Afspelen</button></div></div>`).join('');
+
+  function play(i){
+    const it = document.querySelector(`.item[data-i="${i}"]`);
+    const els = it.querySelectorAll('.goals b.us, .board, .banner, .roll, .confetti, .full');
+    els.forEach(e => e.classList.remove('go')); void it.offsetWidth;   // animatie opnieuw kunnen starten
+    const n = it.querySelector('.goals b.us');
+    if (i === 3){ it.querySelector('.old').textContent = '1'; it.querySelector('.new').textContent = '2'; }
+    else n.textContent = '2';
+    els.forEach(e => e.classList.add('go'));
+    if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+  }
+  function reset(){
+    document.querySelectorAll('.item').forEach(it => {
+      it.querySelectorAll('.go').forEach(e => e.classList.remove('go'));
+      const n = it.querySelector('.goals b.us'); if (!n.classList.contains('roll')) n.textContent = '1';
+    });
+  }
+  document.getElementById('grid').addEventListener('click', e => { const b = e.target.closest('[data-play]'); if (b) play(Number(b.dataset.play)); });
+  document.getElementById('reset').addEventListener('click', reset);
+  document.getElementById('all').addEventListener('click', () => { reset(); V.forEach((_, i) => setTimeout(() => play(i), i * 700)); });
+</script>
+</body>
+</html>
