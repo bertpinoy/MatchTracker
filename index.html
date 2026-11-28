@@ -403,6 +403,7 @@
     <div class="grid" id="l-grid"></div>
 
     <div class="card" id="l-field"></div>
+    <div class="card" id="l-goals" style="display:none"><h2>Doelpunten</h2><div id="l-goalsBody"></div></div>
 
     <div class="card">
       <h2>Tijdlijn</h2>
@@ -756,6 +757,10 @@ function renderLive(){
     case 'finished':main.innerHTML = sym('report') + 'Verslag & PDF'; status.textContent = 'Einde wedstrijd'; ctr.classList.add('single'); end.style.display = 'none'; break;
   }
   renderField($('#l-field'), true);
+  // doelpuntenmakers & assists tijdens de wedstrijd (het verloop staat al in de tijdlijn eronder)
+  const anyGoal = st.events.some(e => scoringSide(e));
+  $('#l-goals').style.display = anyGoal ? '' : 'none';
+  if (anyGoal) $('#l-goalsBody').innerHTML = goalsCompactHtml(false);
   renderTimeline($('#l-tl'), true);
   tick();
 }
@@ -1654,7 +1659,7 @@ function openLiveSheet(){
 
 /* Compact overzicht van de doelpunten (variant B uit mockups/ouderview.html):
    per ploeg de spelers met bolletjes voor goals en assists, daaronder het verloop per minuut. */
-function goalsCompactHtml(){
+function goalsCompactHtml(withChrono = true){
   const split = l => { const m = String(l).match(/^#(\d+)\s*(.*)$/); return m ? [m[1], m[2]] : ['', l]; };
   const teams = order().map(s => {
     const rows = scorerTable(s);
@@ -1672,7 +1677,7 @@ function goalsCompactHtml(){
     return who + (e.type === 'pen_goal' ? ' (pen.)' : '') + (e.assist ? ` (assist ${e.assist})` : '');
   };
   const chrono = goals.length ? `<div class="gs-chrono"><b>Verloop</b>${goals.map(e => `<div>${matchMinute(e)} ${esc(line(e))} · ${run[e.id]}</div>`).join('')}</div>` : '';
-  return teams + chrono;
+  return teams + (withChrono ? chrono : '');
 }
 
 /* ---------- meekijkpagina ---------- */
