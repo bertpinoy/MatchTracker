@@ -1288,7 +1288,8 @@ function scorerTable(side){
     if (e.type === 'own_goal' && e.team === other(side)) row('Eigen doelpunt tegenstander').g++;
   }
   const n = l => isNaN(pnum(l)) ? 999 : pnum(l);
-  return [...rows.values()].sort((x, y) => y.g - x.g || y.a - x.a || n(x.label) - n(y.label));
+  const own = r => r.label === 'Eigen doelpunt tegenstander' ? 1 : 0;   // eigen doelpunten altijd onderaan
+  return [...rows.values()].sort((x, y) => own(x) - own(y) || y.g - x.g || y.a - x.a || n(x.label) - n(y.label));
 }
 function scorers(side){
   return sortedEvents().filter(e => scoringSide(e) === side)
