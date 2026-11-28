@@ -460,7 +460,7 @@
     </div>
     <div class="card"><h2>Score per periode</h2><table class="ptable" id="r-ptable"></table></div>
     <div class="card"><h2>Statistieken</h2><div id="r-stats"></div></div>
-    <div class="card"><h2>Doelpunten</h2><div class="scorers" id="r-scorers"></div></div>
+    <div class="card"><h2>Doelpunten</h2><div id="r-scorers"></div></div>
     <div class="card"><h2>Alle acties</h2><ul class="tl" id="r-tl"></ul></div>
     <button class="btn block" id="r-new"><svg class="ico" aria-hidden="true"><use href="#s-plus"/></svg>Nieuwe wedstrijd</button>
   </section>
@@ -1248,8 +1248,7 @@ function renderSummary(){
   $('#r-stats').innerHTML = stats().map(r => { const tot = r[h] + r[a] || 1; return `<div class="stat"><div class="v">${r[h]}</div>
     <div><div class="m">${r.label}</div><div class="bars"><b style="flex:${r[h] / tot || .0001};background:${sideColor(h)}"></b><b style="flex:${r[a] / tot || .0001};background:${sideColor(a)}"></b></div></div>
     <div class="v">${r[a]}</div></div>`; }).join('');
-  $('#r-scorers').innerHTML = order().map(s => { const l = scorers(s);
-    return `<div><div style="font-weight:800;color:${sideColor(s)};margin-bottom:4px">${esc(sideName(s))}</div>${l.length ? l.map(x => `<div>${ico('goal')}${esc(x)}</div>`).join('') : '<div class="muted">–</div>'}</div>`; }).join('');
+  $('#r-scorers').innerHTML = goalsCompactHtml();   // zelfde overzicht als in de ouderview
   renderTimeline($('#r-tl'), false);
 }
 $('#r-back').addEventListener('click', () => show('live'));
