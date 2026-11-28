@@ -1,7 +1,7 @@
 // Offline cache: the app keeps working at the pitch without signal.
 // Always asks the server for the newest version first (bypassing the 10-minute
 // browser cache GitHub Pages sets) and only falls back to the cache when offline.
-const CACHE = 'kwsc-match-v31';
+const CACHE = 'kwsc-match-v32';
 const FILES = ['./', './index.html', './handleiding.html', './manifest.webmanifest', './logo.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, {cache: 'reload'})))));

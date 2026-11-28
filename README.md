@@ -10,6 +10,28 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 
 ---
 
+## Screenshots
+
+Met fictieve demodata (geen echte spelers). Bijwerken: zie [Screenshots vernieuwen](#screenshots-vernieuwen).
+
+**Coach-app**
+
+| Instellen | Tijdens de wedstrijd | Op het veld & doelpunten |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/01-instellen.png" width="250" alt="Instellen"> | <img src="docs/screenshots/02-wedstrijd.png" width="250" alt="Wedstrijdscherm"> | <img src="docs/screenshots/03-veld-doelpunten.png" width="250" alt="Op het veld, doelpunten en tijdlijn"> |
+| **Wie scoorde?** | **Opstelling met keeper** | **Verslag** |
+| <img src="docs/screenshots/04-wie-scoorde.png" width="250" alt="Spelerkeuze bij een doelpunt"> | <img src="docs/screenshots/05-opstelling.png" width="250" alt="Opstelling kiezen"> | <img src="docs/screenshots/06-verslag.png" width="250" alt="Verslagscherm"> |
+
+**Ouderview (live link)**
+
+| Live volgen | Animatie bij een doelpunt | Verloop & doelpuntenmakers |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/08-ouderview.png" width="250" alt="Ouderview"> | <img src="docs/screenshots/09-ouderview-goal.png" width="250" alt="GOAL-animatie"> | <img src="docs/screenshots/10-ouderview-verloop.png" width="250" alt="Verloop en rangschikking"> |
+
+**Verder:** [doelpunten in het verslag](docs/screenshots/07-verslag-doelpunten.png) · [handleiding](docs/screenshots/11-handleiding.png)
+
+---
+
 ## Inhoud van de repo
 
 | Bestand | Wat het is |
@@ -22,6 +44,8 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 | `mockups/goal-animaties.html` | Mockup met zes mogelijke animaties bij een doelpunt in de ouderview (variant 6, volledig scherm, is ingebouwd). |
 | `mockups/verloop.html` | Mockup met drie voorstellen om het doelpuntenverloop in kolommen te tonen. |
 | `mockups/verloop-v2.html` | Mockup van het gekozen verloop: stand als bolletje links, daarnaast tijd, scorer en assist (ingebouwd). |
+| `docs/screenshots/` | Screenshots voor deze README (fictieve demodata). |
+| `tools/screenshots.mjs` | Script dat de screenshots automatisch maakt met Chrome/Edge in de achtergrond. |
 | `sw.js` | Service worker: bewaart de app offline en zorgt dat nieuwe versies meteen binnenkomen. |
 | `manifest.webmanifest` | Web-app-manifest (naam, icoon, kleuren) zodat de app op het beginscherm geïnstalleerd kan worden. |
 | `logo.png` | Clublogo van KWSC Lauwe (app-icoon, kop van de app en van het PDF-verslag). |
@@ -43,18 +67,21 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 - 16 acties voor beide ploegen: doelpunt (met optionele assist), strafschop raak/gemist, eigen doelpunt, schot, redding, hoekschop, vrije trap, buitenspel, gele/rode kaart, wissel, blessure, grote kans, mooie actie, notitie.
 - Voor onze ploeg verschijnt een keuzevenster met rugnummers en namen; voor de tegenstander alleen een optioneel rugnummer.
 - Elke actie kan ongedaan gemaakt, bewerkt (ploeg, tijd, spelers, notitie) of verwijderd worden.
+- Zodra er gescoord is, toont de wedstrijdpagina een kaart met doelpuntenmakers en assistgevers.
+- Elk keuzevenster sluit met de ✕ rechtsboven, door het naar beneden te vegen of door ernaast te tikken.
 
 **Opstelling**
 - Bij de aftrap en op het einde van elke periode kies je wie (start) op het veld staat, en duid je een keeper aan. Nooit meer spelers dan ingesteld.
 - Wissels werken de opstelling automatisch bij (erin = bank, eruit = veld). Een redding wordt meteen aan de keeper gekoppeld; wie de keeper vervangt wordt keeper.
 - Rood of twee keer geel haalt een speler van het veld; uitgesloten spelers kunnen niet meer terugkomen.
+- In de tijdlijn staat elke opstelling met nummer en naam; de keeper is in de lijst gemarkeerd.
 
 **Na de wedstrijd**
-- Verslag met eindstand, score per periode, statistieken, doelpuntenmakers en assistgevers (met verloop) en alle acties.
+- Verslag met eindstand, score per periode, statistieken, doelpunten (eerst het verloop met tussenstand, dan de rangschikking van doelpuntenmakers en assistgevers) en alle acties. Tijdens de match te openen via *Menu → Verslag & PDF*.
 - PDF-verslag (A4, met clublogo, aanvangsuur en een overzicht van doelpuntenmakers en assistgevers) delen of downloaden, of het verslag als tekst delen (bv. WhatsApp).
 
 **Live link voor ouders**
-- Met 📡 *Start live delen* krijg je een link (`…/index.html?volg=<code>`). Ouders zien zonder account het aanvangsuur (tot de aftrap), de score, de klok, wie op het veld staat, een overzicht van doelpuntenmakers en assistgevers met het verloop, en de tijdlijn, live bijgewerkt.
+- Met 📡 *Start live delen* krijg je een link (`…/index.html?volg=<code>`). Ouders zien zonder account het aanvangsuur (tot de aftrap), de score, de klok, wie op het veld staat (tot het einde van de match), het verloop van de doelpunten met daaronder de doelpuntenmakers en assistgevers, en de tijdlijn, live bijgewerkt.
 - Het aantal (anonieme) kijkers is zichtbaar voor ouders en coach.
 - Scoort onze ploeg, dan wordt het scorebord bij de ouders ±2,5 s geel met "GOAL!", scorer, assist en nieuwe stand (niet bij een tegendoelpunt en niet als de telefoon "minder beweging" gebruikt).
 - Een nieuwe wedstrijd starten of *Stop live delen* sluit het delen netjes af ("Live gestopt").
@@ -138,10 +165,18 @@ en open <http://localhost:5173>.
 
 **Bij een nieuwe functie:** werk ook `handleiding.html` bij als het gebruik verandert.
 
-**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v31` → `v32`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
+**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v32` → `v33`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
 
 **Firebase-regels wijzigen:** pas `database.rules.json` aan en plak de inhoud in de Firebase-console (*Realtime Database → Regels → Publiceren*). De repo publiceert de regels niet automatisch.
 
+### Screenshots vernieuwen
+Na een zichtbare wijziging kan je de screenshots in `docs/screenshots/` opnieuw laten maken. Start de lokale webserver en draai daarna het script (Node 22+ en Chrome of Edge nodig):
+
+```powershell
+node tools/screenshots.mjs
+```
+
+Het script opent de app onzichtbaar op telefoonformaat, vult fictieve demodata in en bewaart elf screenshots. Er gaat niets naar Firebase.
 ---
 
 ## Privacy

@@ -1773,7 +1773,9 @@ function renderWatch(){
   $('#w-sub').textContent = st.status === 'ready' && S().kickoff ? `Aftrap · ${n} × ${S().periodMin} min` : `${n} × ${S().periodMin} min`;
   $('#w-upd').innerHTML = wUpdText();
   $('#w-scorers').innerHTML = goalsCompactHtml(true, true);
-  renderField($('#w-field'), false);
+  // na het einde van de wedstrijd is "Op het veld" niet meer relevant voor de ouders
+  $('#w-field').style.display = st.status === 'finished' ? 'none' : '';
+  if (st.status !== 'finished') renderField($('#w-field'), false);
   renderTimeline($('#w-tl'), true);
   $('#w-pdf').style.display = st.status === 'finished' ? '' : 'none';
   tick();
