@@ -152,6 +152,11 @@
   .tl .tx .d{overflow-wrap:anywhere}
   .tl li.sys{justify-content:center;color:var(--muted);font-size:13px;font-weight:700;padding:8px}
   .tl li.sys span{background:var(--bg);padding:4px 12px;border-radius:999px;border:1px solid var(--line)}
+  .tl li.sys.lineup > div{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13.5px;line-height:1.45;color:var(--muted);width:100%;font-weight:500;text-align:left}
+  .tl li.sys.lineup b{display:flex;align-items:center;gap:6px;color:var(--text);margin-bottom:2px}
+  .tl li.sys.lineup .ico{width:15px;height:15px}
+  .tl li.sys.lineup .lk{display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding:0 8px;border-radius:8px;background:rgba(46,158,79,.18);border:1px solid #2e9e4f;color:var(--text);font-weight:700;background-clip:padding-box}
+  .tl li.sys.lineup .lk .ico{color:#7fc792}
   .tl li.tap:active{background:var(--card2)}
   .empty{text-align:center;color:var(--muted);padding:18px 8px;font-size:14px}
 
@@ -769,7 +774,11 @@ function renderTimeline(ul, newestFirst){
   let evs = sortedEvents(); if (newestFirst) evs.reverse();
   if (!evs.length){ ul.innerHTML = `<li class="empty" style="display:block;border:0">${VIEWER ? 'Nog geen acties.' : 'Nog geen acties. Kies hierboven een team en tik op een actie.'}</li>`; return; }
   ul.innerHTML = evs.map(e => {
-    if (e.type === 'lineup') return `<li class="sys"><span>${sym('lineup')}${e.start ? 'Opstelling ' + pShort(e.period) : 'Opstelling aangepast ' + mmss(e.sec)}: ${esc((e.players || []).map(pnum).join(', '))}${e.keeper ? ' · ' + sym('keeper') + pnum(e.keeper) : ''}</span></li>`;
+    if (e.type === 'lineup'){   // opstelling met nummer én naam: "1 Maxim, 3 Lewis B, …"
+      const nm = l => esc(String(l).replace(/^#/, ''));
+      return `<li class="sys lineup"><div><b>${sym('lineup')}${e.start ? 'Opstelling ' + pShort(e.period) : 'Opstelling aangepast ' + mmss(e.sec)}</b>
+        ${(e.players || []).map(nm).join(', ')}${e.keeper ? `<span class="lk">${sym('keeper')}${nm(e.keeper)}</span>` : ''}</div></li>`;
+    }
     if (e.sys) return `<li class="sys"><span>${sym(SYS[e.type])}${esc(describe(e))} · ${mmss(e.sec)}</span></li>`;
     const t = TYPES[e.type];
     return `<li class="tap" data-id="${e.id}">
