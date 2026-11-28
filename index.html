@@ -745,11 +745,19 @@ function exportCode(){
   return 'KWSC1:' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));
 }
 function parseImport(code){
-  const m = String(code).trim().match(/KWSC1:([A-Za-z0-9+/=]+)/);
+  // iOS (Notities, plakken) voegt soms regeleindes, spaties of onzichtbare tekens toe in lange tekst: alles weghalen
+  const clean = String(code).replace(/[^A-Za-z0-9+/=:]/g, '');
+  const m = clean.match(/KWSC1:([A-Za-z0-9+/]+=*)/);
   if (!m) throw new Error('Geen geldige code');
-  const d = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
-  if (!d || d.v !== 1 || typeof d.players !== 'object') throw new Error('Geen geldige code');
-  return d;
+  // staat er nog tekst achter de code (bv. "Groetjes"), dan die letters er stap voor stap afhalen tot het klopt
+  const b64 = m[1];
+  for (let len = b64.length; len >= Math.max(8, b64.length - 300); len--){
+    try {
+      const d = JSON.parse(decodeURIComponent(escape(atob(b64.slice(0, len)))));
+      if (d && d.v === 1 && typeof d.players === 'object') return d;
+    } catch {}
+  }
+  throw new Error('Geen geldige code');
 }
 $('#s-export').addEventListener('click', () => {
   const code = exportCode(), n = Object.keys(S().players || {}).length;
