@@ -410,6 +410,7 @@
     </div>
 
     <button class="btn primary big block" id="s-go">Naar de wedstrijd</button>
+    <div class="hint" id="s-version" style="text-align:center;margin-top:14px"></div>
   </section>
 
   <!-- ================= LIVE ================= -->
@@ -528,6 +529,7 @@
    verliest niets.
    ===================================================================== */
 const KEY = 'kwsc.match.v2', PREF = 'kwsc.prefs.v2';
+const APP_VERSION = 'v36';   // samen met CACHE in sw.js verhogen; staat onderaan het instellingenscherm
 const US_COLOR = '#ffd400', THEM_COLOR = '#9ca3af';         // scherm
 const US_PDF = '#e0b400', THEM_PDF = '#8b939e';             // PDF (op wit)
 const $ = s => document.querySelector(s);
@@ -746,7 +748,7 @@ function exportCode(){
 }
 function parseImport(code){
   // iOS (Notities, plakken) voegt soms regeleindes, spaties of onzichtbare tekens toe in lange tekst: alles weghalen
-  const clean = String(code).replace(/[^A-Za-z0-9+/=:]/g, '');
+  const clean = String(code).replace(/kwsc1\s*:/i, 'KWSC1:').replace(/-/g, '+').replace(/_/g, '/').replace(/[^A-Za-z0-9+/=:]/g, '');
   const m = clean.match(/KWSC1:([A-Za-z0-9+/]+=*)/);
   if (!m) throw new Error('Geen geldige code');
   // staat er nog tekst achter de code (bv. "Groetjes"), dan die letters er stap voor stap afhalen tot het klopt
@@ -779,7 +781,8 @@ $('#s-export').addEventListener('click', () => {
 $('#s-import').addEventListener('click', () => {
   openSheet(`<h3>${sym('download')} Importeren</h3>
     <div class="sub">Plak hier de code die je op het andere toestel bij <b>Exporteren</b> kreeg. Je huidige spelers en instellingen worden vervangen.</div>
-    <textarea id="im-code" placeholder="KWSC1:…" style="font-family:ui-monospace,Consolas,monospace;font-size:12.5px;min-height:110px;word-break:break-all"></textarea>
+    <textarea id="im-code" placeholder="KWSC1:…" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" style="font-family:ui-monospace,Consolas,monospace;font-size:12.5px;min-height:110px;word-break:break-all"></textarea>
+    <div id="im-err" class="small" style="display:none;color:#ff8a8d;margin-top:8px;word-break:break-all"></div>
     <div class="row" style="margin-top:12px">
       <button class="btn grow" id="im-paste">${sym('copy')}Plakken</button>
       <button class="btn primary grow" id="im-ok">Importeren</button>
@@ -787,7 +790,13 @@ $('#s-import').addEventListener('click', () => {
   $('#sheetBody').onclick = async e => {
     if (e.target.closest('#im-paste')){ try { $('#im-code').value = await navigator.clipboard.readText(); } catch { toast('Plak de code met lang drukken in het veld'); } }
     if (e.target.closest('#im-ok')){
-      let d; try { d = parseImport($('#im-code').value); } catch { toast('Dat is geen geldige code'); return; }
+      const raw = $('#im-code').value;
+      let d; try { d = parseImport(raw); } catch {
+        // tonen wat er echt binnenkwam, zodat duidelijk is wat er misgaat bij het plakken
+        const t = raw.trim(), info = t ? `${t.length} tekens, begint met "${t.slice(0, 12)}…", eindigt op "…${t.slice(-8)}"` : 'het veld is leeg';
+        $('#im-err').textContent = `Geen geldige code (${info}). App ${APP_VERSION}.`; $('#im-err').style.display = '';
+        return;
+      }
       const n = Object.keys(d.players || {}).length;
       if (!confirm(`${n} speler${n === 1 ? '' : 's'} en de instellingen importeren? Je huidige spelers worden vervangen.`)) return;
       EXPORT_KEYS.forEach(k => { if (d[k] !== undefined) S()[k] = d[k]; });
@@ -1904,6 +1913,7 @@ function startWatch(){
 $('#w-pdf').addEventListener('click', () => exportPdf(false));
 
 /* ---------- start ---------- */
+$('#s-version').textContent = `Match Tracker ${APP_VERSION}`;
 if (VIEWER){
   render(); startWatch();
   viewerBeat(); setInterval(viewerBeat, 30000);

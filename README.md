@@ -167,7 +167,7 @@ en open <http://localhost:5173>.
 
 **Bij een nieuwe functie:** werk ook `handleiding.html` bij als het gebruik verandert.
 
-**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v35` → `v36`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
+**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` én `APP_VERSION` in `index.html` (bv. `v36` → `v37`; de versie staat onderaan het instellingenscherm). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
 
 **Firebase-regels wijzigen:** pas `database.rules.json` aan en plak de inhoud in de Firebase-console (*Realtime Database → Regels → Publiceren*). De repo publiceert de regels niet automatisch.
 
