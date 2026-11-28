@@ -400,6 +400,15 @@
       <button class="btn danger block" id="s-resetPlayers" style="margin-top:12px"><svg class="ico" aria-hidden="true"><use href="#s-trash"/></svg>Alle namen wissen</button>
     </div>
 
+    <div class="card">
+      <h2>Overzetten</h2>
+      <div class="hint" style="margin:0 0 10px">Zet spelers en instellingen over naar een andere telefoon of een nieuw adres van de app.</div>
+      <div class="row">
+        <button class="btn grow" id="s-export"><svg class="ico" aria-hidden="true"><use href="#s-share"/></svg>Exporteren</button>
+        <button class="btn grow" id="s-import"><svg class="ico" aria-hidden="true"><use href="#s-download"/></svg>Importeren</button>
+      </div>
+    </div>
+
     <button class="btn primary big block" id="s-go">Naar de wedstrijd</button>
   </section>
 
@@ -727,6 +736,58 @@ $$('[data-step]').forEach(b => b.addEventListener('click', () => {
 }));
 $$('#s-count button').forEach(b => b.addEventListener('click', () => { S().countDown = b.dataset.count === 'down'; save(); renderSetup(); }));
 $('#s-nums').addEventListener('click', e => { const b = e.target.closest('[data-num]'); if (b) openPlayerSheet(b.dataset.num); });
+/* ---------- export / import van spelers en instellingen ----------
+   Een code "KWSC1:<base64 van JSON>" die je kopieert en op een ander toestel (of nieuw adres) plakt. */
+const EXPORT_KEYS = ['team', 'weAreHome', 'periods', 'periodMin', 'squadSize', 'fieldSize', 'players'];
+function exportCode(){
+  const s = S(), data = {v:1};
+  EXPORT_KEYS.forEach(k => data[k] = s[k]);
+  return 'KWSC1:' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+}
+function parseImport(code){
+  const m = String(code).trim().match(/KWSC1:([A-Za-z0-9+/=]+)/);
+  if (!m) throw new Error('Geen geldige code');
+  const d = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+  if (!d || d.v !== 1 || typeof d.players !== 'object') throw new Error('Geen geldige code');
+  return d;
+}
+$('#s-export').addEventListener('click', () => {
+  const code = exportCode(), n = Object.keys(S().players || {}).length;
+  openSheet(`<h3>${sym('share')} Exporteren</h3>
+    <div class="sub">${n} speler${n === 1 ? '' : 's'}, ploegnaam en speelwijze. Kopieer deze code en plak ze op het andere toestel bij <b>Importeren</b>.</div>
+    <textarea id="ex-code" readonly style="font-family:ui-monospace,Consolas,monospace;font-size:12.5px;min-height:110px;word-break:break-all">${esc(code)}</textarea>
+    <div class="row" style="margin-top:12px">
+      <button class="btn grow" id="ex-copy">${sym('copy')}Kopieer</button>
+      <button class="btn primary grow" id="ex-share">${sym('share')}Delen</button>
+    </div>`);
+  $('#sheetBody').onclick = e => {
+    if (e.target.closest('#ex-copy')){ const t = $('#ex-code'); t.select(); navigator.clipboard.writeText(code).then(() => toast('Code gekopieerd'), () => { document.execCommand('copy'); toast('Code gekopieerd'); }); }
+    if (e.target.closest('#ex-share')){
+      if (navigator.share) navigator.share({title:'Match Tracker – spelers', text:code}).catch(() => {});
+      else navigator.clipboard.writeText(code).then(() => toast('Code gekopieerd'));
+    }
+  };
+});
+$('#s-import').addEventListener('click', () => {
+  openSheet(`<h3>${sym('download')} Importeren</h3>
+    <div class="sub">Plak hier de code die je op het andere toestel bij <b>Exporteren</b> kreeg. Je huidige spelers en instellingen worden vervangen.</div>
+    <textarea id="im-code" placeholder="KWSC1:…" style="font-family:ui-monospace,Consolas,monospace;font-size:12.5px;min-height:110px;word-break:break-all"></textarea>
+    <div class="row" style="margin-top:12px">
+      <button class="btn grow" id="im-paste">${sym('copy')}Plakken</button>
+      <button class="btn primary grow" id="im-ok">Importeren</button>
+    </div>`);
+  $('#sheetBody').onclick = async e => {
+    if (e.target.closest('#im-paste')){ try { $('#im-code').value = await navigator.clipboard.readText(); } catch { toast('Plak de code met lang drukken in het veld'); } }
+    if (e.target.closest('#im-ok')){
+      let d; try { d = parseImport($('#im-code').value); } catch { toast('Dat is geen geldige code'); return; }
+      const n = Object.keys(d.players || {}).length;
+      if (!confirm(`${n} speler${n === 1 ? '' : 's'} en de instellingen importeren? Je huidige spelers worden vervangen.`)) return;
+      EXPORT_KEYS.forEach(k => { if (d[k] !== undefined) S()[k] = d[k]; });
+      save(); closeSheet(); renderSetup(); toast(`${n} speler${n === 1 ? '' : 's'} geïmporteerd`);
+    }
+  };
+});
+
 $('#s-resetPlayers').addEventListener('click', () => {
   if (!Object.keys(S().players).length){ toast('Er zijn nog geen namen ingevuld'); return; }
   if (!confirm('Alle spelersnamen wissen?')) return;

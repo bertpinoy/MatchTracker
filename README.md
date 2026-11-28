@@ -61,6 +61,7 @@ Met fictieve demodata (geen echte spelers). Bijwerken: zie [Screenshots vernieuw
 - Ons team (standaard *KWSC Lauwe*), tegenstander, kleur tegenstander (10 vaste kleuren of een eigen kleur), thuis of uit.
 - Speelwijze: aantal periodes, minuten per periode, aantal spelers op het veld (incl. keeper), klok toont gespeelde of resterende tijd.
 - Spelers: raster van rugnummers waar je een naam aan koppelt; het aantal rugnummers in de selectie is instelbaar. Spelers worden onthouden voor volgende wedstrijden.
+- Overzetten: *Exporteren* geeft een code (`KWSC1:…`) met spelers, ploegnaam en speelwijze; die plak je op een ander toestel of nieuw adres bij *Importeren*.
 
 **Tijdens de wedstrijd**
 - Klok per periode met pauze, aanpassen (±10 s, ±1 min, exact instellen) en een alarm (geluid + trillen) als de tijd om is. De klok blijft correct lopen als de telefoon vergrendeld wordt; het scherm blijft aan zolang de klok loopt.
@@ -165,7 +166,7 @@ en open <http://localhost:5173>.
 
 **Bij een nieuwe functie:** werk ook `handleiding.html` bij als het gebruik verandert.
 
-**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v33` → `v34`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
+**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v34` → `v35`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
 
 **Firebase-regels wijzigen:** pas `database.rules.json` aan en plak de inhoud in de Firebase-console (*Realtime Database → Regels → Publiceren*). De repo publiceert de regels niet automatisch.
 
