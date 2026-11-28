@@ -2,9 +2,9 @@
 
 Een mobiele web-app om een jeugdvoetbalwedstrijd van KWSC Lauwe bij te houden vanaf de zijlijn: klok, score, acties per ploeg, opstelling en wissels, een PDF-verslag achteraf en een live link waarmee andere ouders kunnen meekijken.
 
-**Live:** <https://bertpinoy.github.io/MatchTracker/>
+**Live:** <https://matchtracker.bpitconsulting.be/>
 
-Een korte gebruikershandleiding staat in de app zelf (het **?**-icoon) en op <https://bertpinoy.github.io/MatchTracker/handleiding.html>.
+Een korte gebruikershandleiding staat in de app zelf (het **?**-icoon) en op <https://matchtracker.bpitconsulting.be/handleiding.html>.
 
 Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ → Toevoegen aan startscherm* (Android) installeren. Daarna werkt de app als een gewone app, ook zonder internet op het veld.
 
@@ -50,6 +50,7 @@ Met fictieve demodata (geen echte spelers). Bijwerken: zie [Screenshots vernieuw
 | `manifest.webmanifest` | Web-app-manifest (naam, icoon, kleuren) zodat de app op het beginscherm geïnstalleerd kan worden. |
 | `logo.png` | Clublogo van KWSC Lauwe (app-icoon, kop van de app en van het PDF-verslag). |
 | `database.rules.json` | Beveiligingsregels van de Firebase Realtime Database voor het live delen. Ter referentie: de regels moeten met de hand in de Firebase-console geplakt worden. |
+| `CNAME` | Eigen domein voor GitHub Pages: `matchtracker.bpitconsulting.be` (niet verwijderen). |
 | `.gitignore` | Sluit lokale instellingen (`.claude/`) uit. |
 
 ---
@@ -162,7 +163,7 @@ python -m http.server 5173
 
 en open <http://localhost:5173>.
 
-**Publiceren:** de site draait op GitHub Pages vanaf de `main`-branch (root). Elke push naar `main` staat binnen ongeveer een minuut online.
+**Publiceren:** de site draait op GitHub Pages vanaf de `main`-branch (root), op het eigen domein `matchtracker.bpitconsulting.be` (CNAME-record bij de domeinbeheerder naar `bertpinoy.github.io`, HTTPS verplicht). Het oude adres `bertpinoy.github.io/MatchTracker` stuurt automatisch door. Elke push naar `main` staat binnen ongeveer een minuut online.
 
 **Bij een nieuwe functie:** werk ook `handleiding.html` bij als het gebruik verandert.
 
