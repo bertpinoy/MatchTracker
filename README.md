@@ -21,7 +21,7 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 | `mockups/ouderview.html` | Ontwerp-mockup van het doelpuntenoverzicht in de ouderview (variant B is ingebouwd). Niet gebruikt door de app. |
 | `mockups/goal-animaties.html` | Mockup met zes mogelijke animaties bij een doelpunt in de ouderview (variant 6, volledig scherm, is ingebouwd). |
 | `mockups/verloop.html` | Mockup met drie voorstellen om het doelpuntenverloop in kolommen te tonen. |
-| `mockups/verloop-v2.html` | Mockup van het gekozen verloop: stand als bolletje links, daarnaast tijd, scorer en assist. |
+| `mockups/verloop-v2.html` | Mockup van het gekozen verloop: stand als bolletje links, daarnaast tijd, scorer en assist (ingebouwd). |
 | `sw.js` | Service worker: bewaart de app offline en zorgt dat nieuwe versies meteen binnenkomen. |
 | `manifest.webmanifest` | Web-app-manifest (naam, icoon, kleuren) zodat de app op het beginscherm geïnstalleerd kan worden. |
 | `logo.png` | Clublogo van KWSC Lauwe (app-icoon, kop van de app en van het PDF-verslag). |
@@ -138,7 +138,7 @@ en open <http://localhost:5173>.
 
 **Bij een nieuwe functie:** werk ook `handleiding.html` bij als het gebruik verandert.
 
-**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v28` → `v29`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
+**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v29` → `v30`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
 
 **Firebase-regels wijzigen:** pas `database.rules.json` aan en plak de inhoud in de Firebase-console (*Realtime Database → Regels → Publiceren*). De repo publiceert de regels niet automatisch.
 

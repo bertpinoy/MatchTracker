@@ -200,7 +200,13 @@
   .gs-none{color:var(--muted);font-size:14px;padding:2px 0 4px}
   .gs-chrono{font-size:13.5px;color:var(--muted);margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
   .gs-chrono b{display:block;color:var(--text);margin-bottom:2px}
-  .gs-chrono div{padding:2px 0}
+  .gs-r{display:grid;grid-template-columns:58px 1fr;column-gap:12px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+  .gs-chrono b + .gs-r{border-top:0}
+  .gs-s{justify-self:start;min-width:48px;text-align:center;padding:2px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);
+        color:var(--text);font-weight:800;font-size:13.5px;font-variant-numeric:tabular-nums}
+  .gs-s.us{border-color:rgba(255,212,0,.6);background:rgba(255,212,0,.12)}
+  .gs-p{color:var(--text);font-weight:700;font-size:14.5px} .gs-t{color:var(--muted);font-weight:800;margin-right:6px;font-variant-numeric:tabular-nums}
+  .gs-as{font-size:13px;color:var(--muted)}
 
   /* ---------- SHEET ---------- */
   .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
@@ -1698,12 +1704,15 @@ function goalsCompactHtml(withChrono = true){
   }).join('<div style="height:10px"></div>');
   const run = runningScores();
   const goals = sortedEvents().filter(e => scoringSide(e));
-  const line = e => {
-    if (e.type === 'own_goal') return `Eigen doelpunt${e.player ? ' ' + e.player : ''} (${sideName(e.team)})`;
+  // verloop (mockups/verloop-v2.html): stand als bolletje links, daarnaast minuut + scorer, assist eronder
+  const parts = e => {
+    if (e.type === 'own_goal') return ['Eigen doelpunt', (e.player ? e.player + ' · ' : '') + sideName(e.team)];
     const who = e.team === 'us' ? (e.player || 'Onbekend') : `${e.player ? e.player + ' ' : ''}${sideName(e.team)}`;
-    return who + (e.type === 'pen_goal' ? ' (pen.)' : '') + (e.assist ? ` (assist ${e.assist})` : '');
+    return [who + (e.type === 'pen_goal' ? ' (pen.)' : ''), e.assist ? 'assist ' + e.assist : ''];
   };
-  const chrono = goals.length ? `<div class="gs-chrono"><b>Verloop</b>${goals.map(e => `<div>${matchMinute(e)} ${esc(line(e))} · ${run[e.id]}</div>`).join('')}</div>` : '';
+  const chrono = goals.length ? `<div class="gs-chrono"><b>Verloop</b>${goals.map(e => { const [who, sub] = parts(e);
+    return `<div class="gs-r"><span class="gs-s${scoringSide(e) === 'us' ? ' us' : ''}">${run[e.id]}</span>
+      <div><div class="gs-p"><span class="gs-t">${matchMinute(e)}</span>${esc(who)}</div>${sub ? `<div class="gs-as">${esc(sub)}</div>` : ''}</div></div>`; }).join('')}</div>` : '';
   return teams + (withChrono ? chrono : '');
 }
 
