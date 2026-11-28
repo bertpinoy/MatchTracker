@@ -29,6 +29,7 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 ## Functies
 
 **Instellen**
+- Datum en aanvangsuur (standaard vandaag en het volgende volle of halve uur, zolang je ze niet zelf aanpast).
 - Ons team (standaard *KWSC Lauwe*), tegenstander, kleur tegenstander (10 vaste kleuren of een eigen kleur), thuis of uit.
 - Speelwijze: aantal periodes, minuten per periode, aantal spelers op het veld (incl. keeper), klok toont gespeelde of resterende tijd.
 - Spelers: raster van rugnummers waar je een naam aan koppelt; het aantal rugnummers in de selectie is instelbaar. Spelers worden onthouden voor volgende wedstrijden.
@@ -49,7 +50,7 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 - PDF-verslag (A4, met clublogo) delen of downloaden, of het verslag als tekst delen (bv. WhatsApp).
 
 **Live link voor ouders**
-- Met 📡 *Start live delen* krijg je een link (`…/index.html?volg=<code>`). Ouders zien zonder account de score, de klok, wie op het veld staat, doelpunten en de tijdlijn, live bijgewerkt.
+- Met 📡 *Start live delen* krijg je een link (`…/index.html?volg=<code>`). Ouders zien zonder account het aanvangsuur (tot de aftrap), de score, de klok, wie op het veld staat, doelpunten en de tijdlijn, live bijgewerkt.
 - Het aantal (anonieme) kijkers is zichtbaar voor ouders en coach.
 - Een nieuwe wedstrijd starten of *Stop live delen* sluit het delen netjes af ("Live gestopt").
 - Live wedstrijden worden na 7 dagen automatisch uit de database gewist door de telefoon die ze aanmaakte.
@@ -132,7 +133,7 @@ en open <http://localhost:5173>.
 
 **Bij een nieuwe functie:** werk ook `handleiding.html` bij als het gebruik verandert.
 
-**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v19` → `v20`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
+**Bij elke wijziging aan de app:** verhoog het versienummer van `CACHE` in `sw.js` (bv. `kwsc-match-v20` → `v21`). Dan installeert de nieuwe versie zich op de telefoons en herlaadt de app zichzelf de volgende keer dat hij geopend wordt.
 
 **Firebase-regels wijzigen:** pas `database.rules.json` aan en plak de inhoud in de Firebase-console (*Realtime Database → Regels → Publiceren*). De repo publiceert de regels niet automatisch.
 

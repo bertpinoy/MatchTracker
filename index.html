@@ -34,7 +34,8 @@
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
   label.f{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
   label.f:first-of-type{margin-top:0}
-  input[type=text],input[type=number],textarea,select{
+  input[type=date],input[type=time]{color-scheme:dark;-webkit-appearance:none;appearance:none;text-align:left}
+  input[type=text],input[type=number],input[type=date],input[type=time],textarea,select{
     width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;outline:none;min-height:48px}
   input:focus,textarea:focus,select:focus{border-color:var(--accent)}
   textarea{min-height:84px;resize:vertical}
@@ -306,6 +307,10 @@
       <input type="text" id="s-team" placeholder="KWSC Lauwe" autocomplete="off">
       <label class="f">Tegenstander</label>
       <input type="text" id="s-opponent" placeholder="bv. SV Wevelgem" autocomplete="off">
+      <div class="row">
+        <div class="grow"><label class="f">Datum</label><input type="date" id="s-date"></div>
+        <div class="grow"><label class="f">Aanvangsuur</label><input type="time" id="s-kickoff" step="300"></div>
+      </div>
       <label class="f">Kleur tegenstander</label>
       <div class="swatches" id="s-oppColor"></div>
       <label class="f">Wij spelen</label>
@@ -468,6 +473,8 @@ const pad = n => String(n).padStart(2, '0');
 const sym = (k, c = '') => `<svg class="ico ${c}" aria-hidden="true"><use href="#s-${k}"/></svg>`;   // overige symbolen
 const ico = k => `<svg class="ico" aria-hidden="true"><use href="#i-${k}"/></svg>`;   // icoon van een actie
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+/* standaard aanvangsuur: het volgende volle of halve uur (10:12 → 10:30, 10:30 → 11:00) */
+const nextHalfHour = () => { const d = new Date(); let m = d.getHours() * 60 + d.getMinutes(); m = (Math.floor(m / 30) + 1) * 30 % 1440; return `${pad(Math.floor(m / 60))}:${pad(m % 60)}`; };
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 
@@ -504,7 +511,7 @@ function loadPrefs(){ try { return JSON.parse(localStorage.getItem(PREF)) || {};
 function defaultSetup(){
   const p = loadPrefs();
   // klok start altijd op "gespeeld"; tijdens de match kan je wisselen
-  return Object.assign({team:'KWSC Lauwe', opponent:'', weAreHome:true, periods:4, periodMin:15, squadSize:12, fieldSize:8, players:{}}, p, {opponent:'', oppColor:THEM_COLOR, countDown:false});
+  return Object.assign({team:'KWSC Lauwe', opponent:'', weAreHome:true, periods:4, periodMin:15, squadSize:12, fieldSize:8, players:{}}, p, {opponent:'', oppColor:THEM_COLOR, countDown:false, kickoff:nextHalfHour(), whenTouched:false});
 }
 function newMatch(){ return {setup:defaultSetup(), status:'setup', view:'setup', date:today(), period:1, acc:0, runStart:null, events:[], alarmed:{}, sel:'us'}; }
 /* Meekijkmodus: index.html?volg=<id> toont enkel de live wedstrijd, alleen-lezen. */
@@ -519,6 +526,9 @@ if (VIEWER){
   if (!st || !st.setup) st = newMatch();
   if (!st.setup.squadSize) st.setup.squadSize = 12;   // bestaande wedstrijden van vóór deze versie
   if (!st.setup.fieldSize) st.setup.fieldSize = 8;
+  if (st.setup.kickoff === undefined) st.setup.kickoff = nextHalfHour();
+  // nog niet ingestelde wedstrijd: datum en uur volgen de dag/het uur waarop de app geopend wordt
+  if (st.status === 'setup' && !st.setup.whenTouched){ st.date = today(); st.setup.kickoff = nextHalfHour(); }
 }
 
 function save(){
@@ -620,6 +630,8 @@ function render(){
 function renderSetup(){
   const s = S();
   ['team', 'opponent'].forEach(k => { const el = $('#s-' + k); if (document.activeElement !== el) el.value = s[k] || ''; });
+  if (document.activeElement !== $('#s-date')) $('#s-date').value = st.date || today();
+  if (document.activeElement !== $('#s-kickoff')) $('#s-kickoff').value = s.kickoff || '';
   const cur = oppColor(), custom = !OPP_COLORS.some(([c]) => c === cur);
   $('#s-oppColor').innerHTML = OPP_COLORS.map(([c, n]) =>
     `<button class="sw ${c === cur ? 'on' : ''}" data-color="${c}" style="background:${c}" aria-label="${n}" title="${n}"></button>`).join('')
@@ -641,6 +653,9 @@ function renderSetup(){
   $('#s-go').innerHTML = (st.status === 'setup' ? 'Naar de wedstrijd' : 'Opslaan & terug naar wedstrijd') + sym('play');
 }
 ['team', 'opponent'].forEach(k => $('#s-' + k).addEventListener('input', e => { S()[k] = e.target.value; save(); }));
+// datum en aanvangsuur: na aanpassen niet meer automatisch overschrijven
+$('#s-date').addEventListener('input', e => { if (e.target.value){ st.date = e.target.value; S().whenTouched = true; save(); } });
+$('#s-kickoff').addEventListener('input', e => { S().kickoff = e.target.value; S().whenTouched = true; save(); });
 $('#s-oppColor').addEventListener('click', e => { const b = e.target.closest('[data-color]'); if (!b) return; S().oppColor = b.dataset.color; save(); renderSetup(); });
 // eigen kleur: tijdens het kiezen enkel het bolletje bijwerken (opnieuw tekenen zou de kiezer sluiten)
 $('#s-oppColor').addEventListener('input', e => {
@@ -720,7 +735,7 @@ function renderLive(){
   const last = st.period >= n, endTxt = last ? sym('finish') + 'Einde match' : sym('next') + `Einde ${pShort(st.period)}`;
   ctr.classList.remove('single'); end.style.display = '';
   switch (st.status){
-    case 'ready':   main.innerHTML = sym('play') + 'Aftrap'; status.textContent = `${cap(pLong(1))} · nog niet gestart`; ctr.classList.add('single'); end.style.display = 'none'; break;
+    case 'ready':   main.innerHTML = sym('play') + 'Aftrap'; status.textContent = S().kickoff ? `Aftrap ${kickoffText()}` : `${cap(pLong(1))} · nog niet gestart`; ctr.classList.add('single'); end.style.display = 'none'; break;
     case 'running': main.innerHTML = sym('pause') + 'Pauze'; status.textContent = cap(pLong(st.period)); end.innerHTML = endTxt; break;
     case 'paused':  main.innerHTML = sym('play') + 'Hervat'; status.textContent = `${cap(pLong(st.period))} · gepauzeerd`; end.innerHTML = endTxt; break;
     case 'break':   main.innerHTML = sym('play') + `Start ${pShort(st.period + 1)}`; status.textContent = `Rust na ${pShort(st.period)}`; end.innerHTML = sym('finish') + 'Einde match'; break;
@@ -762,7 +777,8 @@ function tick(){
   }
   if (st.view === 'watch'){
     const over = el > L, running = st.status === 'running' || st.status === 'paused';
-    const txt = !running && st.status !== 'break' ? (st.status === 'finished' ? 'Einde' : '00:00')
+    // voor de aftrap toont de grote klok het aanvangsuur
+    const txt = !running && st.status !== 'break' ? (st.status === 'finished' ? 'Einde' : (S().kickoff || '00:00'))
       : S().countDown ? (over ? '+' + mmss((el - L) / 1000) : mmss(Math.ceil((L - el) / 1000))) : mmss(el / 1000);
     const t = $('#w-time'); t.textContent = txt; t.classList.toggle('over', over && running);
     $('#w-bar').style.width = (st.status === 'ready' ? 0 : Math.min(100, el / L * 100)) + '%';
@@ -902,7 +918,7 @@ function mainAction(){
 function kickoffNow(){
   switch (st.status){
     case 'ready':
-      st.status = 'running'; st.acc = 0; st.runStart = Date.now(); st.date = today(); addSys('period_start'); keepAwake(true); break;
+      st.status = 'running'; st.acc = 0; st.runStart = Date.now(); addSys('period_start'); keepAwake(true); break;
     case 'running':
       st.acc = elapsed(); st.runStart = null; st.status = 'paused'; break;
     case 'paused':
@@ -1181,7 +1197,14 @@ function scorers(side){
 }
 function metaLine(){
   const d = new Date((st.date || today()) + 'T12:00');
-  return [d.toLocaleDateString('nl-BE', {weekday:'long', day:'numeric', month:'long', year:'numeric'}), `${S().periods} × ${S().periodMin} min`];
+  return [d.toLocaleDateString('nl-BE', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) + (S().kickoff ? ` · ${S().kickoff}` : ''),
+    `${S().periods} × ${S().periodMin} min`];
+}
+/* "om 10:30", of "za 29 nov om 10:30" als de match niet vandaag is */
+function kickoffText(){
+  if (!S().kickoff) return '';
+  const d = st.date && st.date !== today() ? new Date(st.date + 'T12:00').toLocaleDateString('nl-BE', {weekday:'short', day:'numeric', month:'short'}) + ' ' : '';
+  return `${d}om ${S().kickoff}`;
 }
 function renderSummary(){
   const sc = score(), [h, a] = order();
@@ -1427,7 +1450,7 @@ function liveBody(uidv, ended){
   const s = S();
   return {uid:uidv, updated:Date.now(), srv:{'.sv':'timestamp'}, date:st.date, status:st.status, period:st.period,
     acc: ended ? elapsed() : st.acc, runStart: ended ? null : st.runStart, liveEnded: !!ended,
-    setup:{team:s.team, opponent:s.opponent, oppColor:oppColor(), weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, countDown:s.countDown},
+    setup:{team:s.team, opponent:s.opponent, oppColor:oppColor(), kickoff:s.kickoff || '', weAreHome:s.weAreHome, periods:s.periods, periodMin:s.periodMin, countDown:s.countDown},
     events:st.events};
 }
 /* Live delen afsluiten: laatste stand doorsturen met 'liveEnded' (klok bevroren bij de ouders). */
@@ -1590,12 +1613,12 @@ function renderWatch(){
     const p = i + 1, done = p < st.period || (p === st.period && (st.status === 'break' || st.status === 'finished'));
     return `<i class="${done ? 'done' : p === st.period && st.status !== 'ready' ? 'cur' : ''}"></i>`;
   }).join('');
-  const txt = {ready:'Nog niet begonnen', running:cap(pLong(st.period)), paused:`${cap(pLong(st.period))} · gepauzeerd`,
+  const txt = {ready: S().kickoff ? `Aftrap ${kickoffText()}` : 'Nog niet begonnen', running:cap(pLong(st.period)), paused:`${cap(pLong(st.period))} · gepauzeerd`,
     break:`Rust na ${pShort(st.period)}`, finished:'Einde wedstrijd'}[st.status] || '';
   const ended = st.liveEnded && st.status !== 'finished';
   const ws = $('#w-status'); ws.textContent = ended ? 'Live gestopt' : watchConnected || lastUpdate ? txt : 'Verbinden…';
   ws.className = 'pill' + (st.status === 'running' && !ended ? ' live' : '');
-  $('#w-sub').textContent = `${n} × ${S().periodMin} min`;
+  $('#w-sub').textContent = st.status === 'ready' && S().kickoff ? `Aftrap · ${n} × ${S().periodMin} min` : `${n} × ${S().periodMin} min`;
   $('#w-upd').innerHTML = wUpdText();
   $('#w-scorers').innerHTML = order().map(s => { const l = scorers(s);
     return `<div><div style="font-weight:800;color:${sideColor(s)};margin-bottom:4px">${esc(sideName(s))}</div>${l.length ? l.map(x => `<div>${ico('goal')}${esc(x)}</div>`).join('') : '<div class="muted">–</div>'}</div>`; }).join('');
