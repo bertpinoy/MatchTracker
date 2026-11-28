@@ -20,6 +20,7 @@ Op een telefoon openen en via *Deel → Zet op beginscherm* (iPhone) of *⋮ →
 | `mockups/symbolen.html` | Ontwerp-mockup van de overige symbolen (knoppen, menu, live delen). Niet gebruikt door de app. |
 | `mockups/ouderview.html` | Ontwerp-mockup van het doelpuntenoverzicht in de ouderview (variant B is ingebouwd). Niet gebruikt door de app. |
 | `mockups/goal-animaties.html` | Mockup met zes mogelijke animaties bij een doelpunt in de ouderview (variant 6, volledig scherm, is ingebouwd). |
+| `mockups/verloop.html` | Mockup met drie voorstellen om het doelpuntenverloop in kolommen te tonen. |
 | `sw.js` | Service worker: bewaart de app offline en zorgt dat nieuwe versies meteen binnenkomen. |
 | `manifest.webmanifest` | Web-app-manifest (naam, icoon, kleuren) zodat de app op het beginscherm geïnstalleerd kan worden. |
 | `logo.png` | Clublogo van KWSC Lauwe (app-icoon, kop van de app en van het PDF-verslag). |
